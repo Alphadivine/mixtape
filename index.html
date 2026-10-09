@@ -1,0 +1,881 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mixtape</title>
+<meta name="description" content="Share songs with your crew, react, rate, and build a group playlist.">
+<meta name="theme-color" content="#0f0d13">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f0d13; --surface:#18151e; --surface2:#221e2a; --line:#2f2a38;
+  --text:#f3eef7; --muted:#a69fb2; --accent:#ff6b3d; --accent2:#ffc857; --good:#5fd38d; --bad:#ff5d6c;
+  --radius:16px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:"DM Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100vh;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+a{color:inherit}
+h1,h2,h3{font-family:"Bricolage Grotesque",sans-serif;margin:0}
+.hidden{display:none!important}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+
+/* Header */
+header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;gap:12px;height:60px}
+.brand{display:flex;align-items:center;gap:10px;font-family:"Bricolage Grotesque";font-weight:800;font-size:22px;letter-spacing:-.02em}
+.brand svg{width:34px;height:34px}
+.spacer{flex:1}
+.icon-btn{height:38px;min-width:38px;padding:0 12px;border-radius:999px;background:var(--surface2);display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:14px;font-weight:500}
+.icon-btn:hover{background:var(--line)}
+.avatar{width:32px;height:32px;border-radius:50%;object-fit:cover;background:var(--surface2);flex:none}
+.avatar.sm{width:20px;height:20px}
+.avatar-btn{padding:0;border-radius:50%;width:38px;height:38px;display:grid;place-items:center;background:var(--surface2)}
+
+/* Toolbar */
+.toolbar{padding:16px 0 8px;display:flex;flex-direction:column;gap:10px}
+.search{width:100%;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface);padding:0 14px;outline:none}
+.search:focus{border-color:var(--accent)}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:14px;color:var(--muted);font-weight:500}
+.chip.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.section-title{display:flex;align-items:baseline;justify-content:space-between;margin:14px 0 8px}
+.section-title h2{font-size:20px}
+.section-title span{color:var(--muted);font-size:14px}
+
+/* Cards */
+.list{display:flex;flex-direction:column;gap:12px;padding-bottom:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:12px}
+.card.unheard{border-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
+.row{display:flex;gap:12px;align-items:center}
+.art{position:relative;width:76px;height:76px;border-radius:12px;overflow:hidden;flex:none;background:var(--surface2)}
+.art img{width:100%;height:100%;object-fit:cover;display:block}
+.play{position:absolute;inset:auto 6px 6px auto;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.65);display:grid;place-items:center;color:#fff}
+.play svg{width:14px;height:14px}
+.meta{min-width:0;flex:1}
+.title{font-weight:700;font-size:16px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.artist{color:var(--muted);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.by{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:13px;margin-top:6px}
+.tag{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:var(--accent);color:#1a0d07}
+.tag.soft{background:var(--surface2);color:var(--muted)}
+.note{background:var(--surface2);border-radius:12px;padding:10px 12px;font-size:14px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+.links{display:flex;gap:8px;flex-wrap:wrap}
+.svc{height:32px;padding:0 12px;border-radius:999px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:6px;text-decoration:none;border:1px solid var(--line);background:var(--surface2)}
+.svc i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.svc.sp i{background:#1ed760}.svc.am i{background:#fa2d48}.svc.yt i{background:#ff0033}
+.actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:10px}
+.react{height:32px;min-width:40px;padding:0 9px;border-radius:999px;background:var(--surface2);font-size:15px;display:inline-flex;align-items:center;gap:4px;border:1px solid transparent}
+.react b{font-size:12px;color:var(--muted);font-weight:700}
+.react.mine{border-color:var(--accent2);background:color-mix(in srgb,var(--accent2) 16%,var(--surface2))}
+.stars{display:inline-flex;gap:1px;margin-left:auto;align-items:center}
+.star{font-size:19px;line-height:1;color:var(--line);padding:2px}
+.star.on{color:var(--accent2)}
+.avg{font-size:12px;color:var(--muted);margin-left:4px;font-weight:700}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap}
+.btn{height:36px;padding:0 14px;border-radius:10px;background:var(--surface2);font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:var(--line)}
+.btn.primary{background:var(--accent);color:#1a0d07}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ok{background:color-mix(in srgb,var(--good) 18%,var(--surface2));color:var(--good)}
+.btn.queued{background:color-mix(in srgb,var(--accent2) 16%,var(--surface2));color:var(--accent2)}
+.btn.danger{color:var(--bad)}
+.btn:disabled{opacity:.5;cursor:default}
+.empty{text-align:center;color:var(--muted);padding:48px 16px;line-height:1.5}
+.empty h3{color:var(--text);margin-bottom:6px;font-size:20px}
+
+/* Bottom nav */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs .wrap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:68px}
+.tab{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--muted);font-weight:600;position:relative}
+.tab.on{color:var(--text)}
+.tab svg{width:22px;height:22px}
+.badge{position:absolute;top:-4px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--accent);color:#1a0d07;font-size:11px;font-weight:800;display:grid;place-items:center}
+.fab{width:56px;height:56px;border-radius:50%;background:var(--accent);color:#1a0d07;display:grid;place-items:center;box-shadow:0 8px 24px rgba(255,107,61,.35);margin-top:-22px}
+.fab svg{width:26px;height:26px}
+
+/* Sheets */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:40;display:flex;align-items:flex-end;justify-content:center}
+.sheet{width:100%;max-width:640px;max-height:92vh;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:22px 22px 0 0;padding:18px 16px calc(20px + env(safe-area-inset-bottom))}
+@media (min-width:700px){.scrim{align-items:center}.sheet{border-radius:22px}}
+.sheet-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.sheet-head h2{font-size:22px;flex:1}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.field label{font-size:13px;color:var(--muted);font-weight:600}
+.input,textarea{width:100%;border-radius:12px;border:1px solid var(--line);background:var(--bg);padding:11px 13px;outline:none}
+.input:focus,textarea:focus{border-color:var(--accent)}
+textarea{min-height:74px;resize:vertical}
+.hint{font-size:12px;color:var(--muted);line-height:1.45}
+.results{display:flex;flex-direction:column;gap:6px;margin:6px 0 14px}
+.result{display:flex;gap:10px;align-items:center;padding:8px;border-radius:12px;background:var(--bg);border:1px solid var(--line);text-align:left;width:100%}
+.result img{width:44px;height:44px;border-radius:8px;object-fit:cover;flex:none;background:var(--surface2)}
+.result.sel{border-color:var(--accent)}
+.picked{display:flex;gap:12px;align-items:center;padding:10px;border-radius:14px;background:var(--bg);border:1px solid var(--accent);margin-bottom:14px}
+.picked img{width:60px;height:60px;border-radius:10px;object-fit:cover}
+.people{display:flex;flex-wrap:wrap;gap:8px}
+.person{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 12px 0 4px;border-radius:999px;background:var(--bg);border:1px solid var(--line);font-size:14px}
+.person.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--bg))}
+.check{display:flex;align-items:center;gap:10px;font-size:14px;margin-bottom:14px}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+.detail-art{width:100%;max-width:280px;aspect-ratio:1;border-radius:18px;object-fit:cover;display:block;margin:0 auto 14px;background:var(--surface2)}
+.who{display:flex;flex-direction:column;gap:6px;margin:8px 0 14px}
+.who div{display:flex;align-items:center;gap:8px;font-size:14px}
+.who span.r{margin-left:auto;color:var(--accent2)}
+.comment{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.comment:last-child{border-bottom:0}
+.comment .body{flex:1;min-width:0;font-size:14px;line-height:1.45;word-break:break-word}
+.comment .body b{font-size:13px}
+.comment .time{color:var(--muted);font-size:12px;margin-left:6px}
+.comment-form{display:flex;gap:8px;margin-top:10px}
+.comment-form .input{flex:1}
+.panel{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
+.panel h3{font-size:16px;margin-bottom:8px}
+.code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:var(--surface2);padding:8px 10px;border-radius:8px;word-break:break-all;display:block;margin:6px 0}
+.status{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.dot.on{background:var(--good)}
+
+/* Sign-in */
+.gate{min-height:100vh;display:grid;place-items:center;padding:24px;text-align:center}
+.gate .box{max-width:420px}
+.gate svg.logo{width:96px;height:96px;margin-bottom:12px}
+.gate h1{font-size:44px;letter-spacing:-.03em}
+.gate p{color:var(--muted);line-height:1.5;margin:10px 0 24px}
+.gbtn{height:48px;padding:0 22px;border-radius:999px;background:var(--text);color:var(--bg);font-weight:700;display:inline-flex;align-items:center;gap:10px}
+
+/* Toast */
+#toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);opacity:0;background:var(--text);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;font-weight:600;z-index:60;transition:.25s;max-width:calc(100% - 32px);text-align:center;pointer-events:none}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.spin{width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:sp .7s linear infinite;display:inline-block}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="logo" viewBox="0 0 64 64">
+    <rect x="4" y="12" width="56" height="40" rx="7" fill="#ff6b3d"/>
+    <rect x="11" y="18" width="42" height="17" rx="4" fill="#1a0d07"/>
+    <circle cx="22" cy="26.5" r="5" fill="#ffc857"/><circle cx="42" cy="26.5" r="5" fill="#ffc857"/>
+    <circle cx="22" cy="26.5" r="1.8" fill="#1a0d07"/><circle cx="42" cy="26.5" r="1.8" fill="#1a0d07"/>
+    <path d="M17 52l4-9h22l4 9z" fill="#1a0d07" opacity=".35"/>
+  </symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z" fill="currentColor"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z" fill="currentColor"/></symbol>
+</svg>
+
+<!-- Setup needed -->
+<div id="setupGate" class="gate hidden">
+  <div class="box">
+    <svg class="logo"><use href="#logo"/></svg>
+    <h1>Almost there</h1>
+    <p>Mixtape needs its Firebase settings. Open <b>index.html</b>, find <code>FIREBASE_CONFIG</code> near the bottom, and paste in the config from your Firebase project. The setup guide walks through it.</p>
+  </div>
+</div>
+
+<!-- Sign in -->
+<div id="signinGate" class="gate hidden">
+  <div class="box">
+    <svg class="logo"><use href="#logo"/></svg>
+    <h1>Mixtape</h1>
+    <p>Drop songs for the crew, react and rate, send tracks straight to a friend, and build the group playlist together.</p>
+    <button class="gbtn" id="signinBtn">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>
+      Sign in with Google
+    </button>
+  </div>
+</div>
+
+<!-- App -->
+<div id="app" class="hidden">
+  <header>
+    <div class="wrap">
+      <div class="brand"><svg><use href="#logo"/></svg>Mixtape</div>
+      <div class="spacer"></div>
+      <button class="icon-btn" data-action="open-playlist" id="playlistBtn" title="Open group playlist">
+        <svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#1ed760"/><path d="M6.5 9.3c3.8-1.1 7.9-.8 11 1M7.2 12.4c3.1-.9 6.4-.6 9 .9M7.8 15.3c2.5-.7 5-.5 7.1.7" stroke="#0b0b0b" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+        Playlist
+      </button>
+      <button class="avatar-btn" data-action="settings" title="Settings"><img class="avatar" id="meAvatar" alt=""></button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section id="view-feed">
+      <div class="toolbar">
+        <input class="search" id="search" type="search" placeholder="Search songs, artists, or who shared…" autocomplete="off">
+        <div class="chips" id="filters">
+          <button class="chip on" data-filter="all">All</button>
+          <button class="chip" data-filter="new">New to me</button>
+          <button class="chip" data-filter="top">Top rated</button>
+          <button class="chip" data-filter="playlist">Playlist</button>
+          <button class="chip" data-filter="mine">Shared by me</button>
+        </div>
+      </div>
+      <div class="list" id="feedList"></div>
+    </section>
+
+    <section id="view-inbox" class="hidden">
+      <div class="section-title"><h2>Sent to you</h2><span id="inboxCount"></span></div>
+      <div class="list" id="inboxList"></div>
+    </section>
+  </main>
+
+  <nav class="tabs">
+    <div class="wrap">
+      <button class="tab on" data-tab="feed">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        Feed
+      </button>
+      <button class="fab" data-action="add" title="Share a song"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+      <button class="tab" data-tab="inbox">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13L22 12v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z"/></svg>
+        Inbox
+        <span class="badge hidden" id="inboxBadge"></span>
+      </button>
+    </div>
+  </nav>
+</div>
+
+<div id="sheetHost"></div>
+<div id="toast"></div>
+
+<script type="module">
+/* =========================================================
+   1) PASTE YOUR FIREBASE CONFIG HERE (see Docs/Setup guide)
+   ========================================================= */
+const FIREBASE_CONFIG = {
+  apiKey: "PASTE_API_KEY",
+  authDomain: "PASTE_PROJECT.firebaseapp.com",
+  projectId: "PASTE_PROJECT_ID",
+  storageBucket: "PASTE_PROJECT.appspot.com",
+  messagingSenderId: "PASTE_SENDER_ID",
+  appId: "PASTE_APP_ID"
+};
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, doc, onSnapshot, addDoc, setDoc, updateDoc, deleteDoc,
+  serverTimestamp, query, orderBy, arrayUnion, deleteField, increment }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const REACTIONS = ["🔥","❤️","😮","😂","💤"];
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const store = {
+  get(k){ try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  set(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+  del(k){ try { localStorage.removeItem(k); } catch {} }
+};
+function toast(msg, ms = 2600){
+  const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), ms);
+}
+function timeAgo(ms){
+  if (!ms) return "just now";
+  const s = Math.floor((Date.now() - ms) / 1000);
+  if (s < 60) return "just now";
+  const m = Math.floor(s/60); if (m < 60) return m + "m ago";
+  const h = Math.floor(m/60); if (h < 24) return h + "h ago";
+  const d = Math.floor(h/24); if (d < 7) return d + "d ago";
+  return new Date(ms).toLocaleDateString(undefined,{month:"short",day:"numeric"});
+}
+const tsMs = t => t?.toMillis ? t.toMillis() : (typeof t === "number" ? t : 0);
+const initials = n => encodeURIComponent((n||"?").trim().charAt(0).toUpperCase());
+const avatarUrl = (photo, name) => photo || `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" fill="#2f2a38"/><text x="20" y="26" font-family="sans-serif" font-size="18" font-weight="700" fill="#f3eef7" text-anchor="middle">${decodeURIComponent(initials(name))}</text></svg>`)}`;
+
+/* ---------- State ---------- */
+const S = { me:null, songs:[], users:{}, settings:{}, tab:"feed", filter:"all", q:"", openId:null, playingId:null };
+const audio = new Audio();
+audio.addEventListener("ended", () => { S.playingId = null; render(); });
+
+/* ---------- Boot ---------- */
+let db, auth;
+const configured = !Object.values(FIREBASE_CONFIG).some(v => String(v).startsWith("PASTE"));
+if (!configured) { $("#setupGate").classList.remove("hidden"); }
+else boot();
+
+function boot(){
+  const app = initializeApp(FIREBASE_CONFIG);
+  auth = getAuth(app); db = getFirestore(app);
+  spHandleCallback();
+
+  $("#signinBtn").onclick = async () => {
+    const p = new GoogleAuthProvider();
+    try { await signInWithPopup(auth, p); }
+    catch (e) {
+      if (["auth/popup-blocked","auth/operation-not-supported-in-this-environment"].includes(e.code)) signInWithRedirect(auth, p);
+      else if (e.code !== "auth/popup-closed-by-user") toast("Sign-in failed: " + (e.code || e.message));
+    }
+  };
+
+  let unsubs = [];
+  onAuthStateChanged(auth, async user => {
+    unsubs.forEach(u => u()); unsubs = [];
+    if (!user) { S.me = null; $("#app").classList.add("hidden"); $("#signinGate").classList.remove("hidden"); return; }
+    S.me = { uid:user.uid, name:user.displayName || user.email.split("@")[0], photo:user.photoURL || "" };
+    $("#signinGate").classList.add("hidden"); $("#app").classList.remove("hidden");
+    $("#meAvatar").src = avatarUrl(S.me.photo, S.me.name);
+    setDoc(doc(db,"users",user.uid), { name:S.me.name, photo:S.me.photo, lastSeen:serverTimestamp() }, { merge:true }).catch(()=>{});
+
+    unsubs.push(onSnapshot(query(collection(db,"songs"), orderBy("createdAt","desc")), snap => {
+      S.songs = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+      render(); if (S.openId) refreshDetail();
+    }, err => toast("Couldn't load songs: " + err.code)));
+    unsubs.push(onSnapshot(collection(db,"users"), snap => {
+      S.users = {}; snap.forEach(d => S.users[d.id] = d.data()); render();
+    }));
+    unsubs.push(onSnapshot(doc(db,"settings","group"), d => { S.settings = d.data() || {}; }));
+  });
+}
+
+/* ---------- Helpers on songs ---------- */
+const avgRating = s => { const v = Object.values(s.ratings||{}); return v.length ? v.reduce((a,b)=>a+b,0)/v.length : 0; };
+const heard = (s, uid = S.me?.uid) => !!(s.listened||{})[uid];
+const isInbox = s => (s.sentTo||[]).includes(S.me.uid);
+const senderFor = s => { const sends = (s.sends||[]).filter(x => x.to === S.me.uid); return sends[sends.length-1]; };
+const userName = uid => S.users[uid]?.name || "Someone";
+function links(s){
+  const q = encodeURIComponent(`${s.title} ${s.artist}`);
+  return {
+    spotify: s.spotifyUrl || `https://open.spotify.com/search/${q}`,
+    apple: s.appleUrl || `https://music.apple.com/us/search?term=${q}`,
+    ytm: s.ytmUrl || `https://music.youtube.com/search?q=${q}`
+  };
+}
+
+/* ---------- Render ---------- */
+function render(){
+  if (!S.me) return;
+  const unheardInbox = S.songs.filter(s => isInbox(s) && !heard(s)).length;
+  const b = $("#inboxBadge"); b.textContent = unheardInbox; b.classList.toggle("hidden", !unheardInbox);
+
+  let feed = S.songs.slice();
+  const q = S.q.trim().toLowerCase();
+  if (q) feed = feed.filter(s => `${s.title} ${s.artist} ${s.album} ${s.addedBy?.name} ${s.note}`.toLowerCase().includes(q));
+  if (S.filter === "new") feed = feed.filter(s => !heard(s) && s.addedBy?.uid !== S.me.uid);
+  if (S.filter === "mine") feed = feed.filter(s => s.addedBy?.uid === S.me.uid);
+  if (S.filter === "playlist") feed = feed.filter(s => s.playlist === "added" || s.playlist === "queued");
+  if (S.filter === "top") feed = feed.filter(s => avgRating(s) > 0).sort((a,b) => avgRating(b) - avgRating(a));
+
+  $("#feedList").innerHTML = feed.length ? feed.map(card).join("") : emptyFeed();
+
+  const inbox = S.songs.filter(isInbox).sort((a,b) => (senderFor(b)?.at||0) - (senderFor(a)?.at||0));
+  $("#inboxCount").textContent = unheardInbox ? `${unheardInbox} new` : "";
+  $("#inboxList").innerHTML = inbox.length ? inbox.map(s => card(s, true)).join("")
+    : `<div class="empty"><h3>Nothing here yet</h3>When a friend sends you a song, it lands here.</div>`;
+}
+function emptyFeed(){
+  if (S.songs.length) return `<div class="empty"><h3>No matches</h3>Try a different filter or search.</div>`;
+  return `<div class="empty"><h3>The tape's blank</h3>Tap <b>+</b> to share the first song with the crew.</div>`;
+}
+
+function card(s, inboxView = false){
+  const me = S.me.uid, mine = s.addedBy?.uid === me;
+  const myReact = (s.reactions||{})[me], myRate = (s.ratings||{})[me] || 0;
+  const counts = {}; Object.values(s.reactions||{}).forEach(r => counts[r] = (counts[r]||0)+1);
+  const avg = avgRating(s), nRates = Object.keys(s.ratings||{}).length;
+  const heardCount = Object.keys(s.listened||{}).length;
+  const L = links(s);
+  const sender = inboxView ? senderFor(s) : null;
+  const unheard = !heard(s) && !mine;
+  const playing = S.playingId === s.id;
+
+  return `<article class="card ${unheard && (inboxView || isInbox(s)) ? "unheard" : ""}">
+    <div class="row">
+      <div class="art">
+        ${s.artwork ? `<img src="${esc(s.artwork)}" alt="" loading="lazy">` : ""}
+        ${s.previewUrl ? `<button class="play" data-action="preview" data-id="${s.id}" title="${playing?"Pause":"Play"} 30s preview"><svg><use href="#i-${playing?"pause":"play"}"/></svg></button>` : ""}
+      </div>
+      <div class="meta" data-action="detail" data-id="${s.id}" style="cursor:pointer">
+        <div class="title">${esc(s.title)}</div>
+        <div class="artist">${esc(s.artist)}${s.album ? " · " + esc(s.album) : ""}</div>
+        <div class="by">
+          <img class="avatar sm" src="${esc(avatarUrl(s.addedBy?.photo, s.addedBy?.name))}" alt="">
+          ${sender ? `Sent by <b>${esc(sender.fromName)}</b> · ${timeAgo(sender.at)}` : `${esc(s.addedBy?.name)} · ${timeAgo(tsMs(s.createdAt))}`}
+          ${unheard && isInbox(s) && !inboxView ? `<span class="tag">For you</span>` : ""}
+          ${s.playlist === "added" ? `<span class="tag soft">In playlist</span>` : ""}
+        </div>
+      </div>
+    </div>
+    ${s.note ? `<div class="note">${esc(s.note)}</div>` : ""}
+    <div class="links">
+      <a class="svc sp" href="${esc(L.spotify)}" target="_blank" rel="noopener"><i></i>Spotify</a>
+      <a class="svc am" href="${esc(L.apple)}" target="_blank" rel="noopener"><i></i>Apple Music</a>
+      <a class="svc yt" href="${esc(L.ytm)}" target="_blank" rel="noopener"><i></i>YouTube Music</a>
+    </div>
+    <div class="actions">
+      ${REACTIONS.map(r => `<button class="react ${myReact===r?"mine":""}" data-action="react" data-id="${s.id}" data-r="${r}">${r}${counts[r]?`<b>${counts[r]}</b>`:""}</button>`).join("")}
+      <span class="stars" title="Your rating">
+        ${[1,2,3,4,5].map(n => `<button class="star ${n<=myRate?"on":""}" data-action="rate" data-id="${s.id}" data-n="${n}" aria-label="${n} star">★</button>`).join("")}
+        ${nRates ? `<span class="avg">${avg.toFixed(1)} (${nRates})</span>` : ""}
+      </span>
+    </div>
+    <div class="btnrow">
+      ${mine ? "" : `<button class="btn ${heard(s)?"ok":""}" data-action="heard" data-id="${s.id}">${heard(s)?"✓ Listened":"Mark listened"}</button>`}
+      <button class="btn" data-action="detail" data-id="${s.id}">💬 ${s.commentCount||0}</button>
+      <button class="btn" data-action="send" data-id="${s.id}">Send to…</button>
+      ${playlistBtn(s)}
+      ${heardCount ? `<span class="hint" style="align-self:center;margin-left:auto">Heard by ${heardCount}</span>` : ""}
+    </div>
+  </article>`;
+}
+function playlistBtn(s){
+  if (s.playlist === "added") return `<button class="btn ok" disabled>✓ In playlist</button>`;
+  if (s.playlist === "queued") return spConnected()
+    ? `<button class="btn queued" data-action="playlist" data-id="${s.id}">Queued · add now</button>`
+    : `<button class="btn queued" disabled>Queued for playlist</button>`;
+  return `<button class="btn" data-action="playlist" data-id="${s.id}">+ Playlist</button>`;
+}
+
+/* ---------- Events ---------- */
+document.addEventListener("click", async e => {
+  const t = e.target.closest("[data-action],[data-tab],[data-filter]");
+  if (!t) return;
+  if (t.dataset.tab) { S.tab = t.dataset.tab;
+    document.querySelectorAll(".tab").forEach(x => x.classList.toggle("on", x === t));
+    $("#view-feed").classList.toggle("hidden", S.tab !== "feed");
+    $("#view-inbox").classList.toggle("hidden", S.tab !== "inbox");
+    window.scrollTo({top:0}); return; }
+  if (t.dataset.filter) { S.filter = t.dataset.filter;
+    document.querySelectorAll(".chip").forEach(x => x.classList.toggle("on", x === t)); render(); return; }
+
+  const id = t.dataset.id, s = S.songs.find(x => x.id === id);
+  switch (t.dataset.action) {
+    case "add": return openAdd();
+    case "settings": return openSettings();
+    case "open-playlist":
+      if (S.settings.playlistUrl) window.open(S.settings.playlistUrl, "_blank", "noopener");
+      else { toast("No group playlist yet. Add one in Settings."); openSettings(); }
+      return;
+    case "preview": return togglePreview(s);
+    case "detail": return openDetail(id);
+    case "send": return openSend(s);
+    case "react": {
+      const mine = (s.reactions||{})[S.me.uid] === t.dataset.r;
+      return update(id, { [`reactions.${S.me.uid}`]: mine ? deleteField() : t.dataset.r });
+    }
+    case "rate": {
+      const n = +t.dataset.n, cur = (s.ratings||{})[S.me.uid];
+      return update(id, { [`ratings.${S.me.uid}`]: cur === n ? deleteField() : n });
+    }
+    case "heard": return update(id, { [`listened.${S.me.uid}`]: heard(s) ? deleteField() : true });
+    case "playlist": return playlistAction([s], t);
+  }
+});
+$("#search").addEventListener("input", e => { S.q = e.target.value; render(); });
+
+async function update(id, data){
+  try { await updateDoc(doc(db,"songs",id), data); }
+  catch (e) { toast("Couldn't save: " + (e.code || e.message)); }
+}
+
+function togglePreview(s){
+  if (S.playingId === s.id) { audio.pause(); S.playingId = null; }
+  else { audio.src = s.previewUrl; audio.play().catch(()=>toast("Preview couldn't play")); S.playingId = s.id; }
+  render();
+}
+
+/* ---------- Sheets ---------- */
+function openSheet(html, onClose){
+  closeSheet();
+  const host = $("#sheetHost");
+  host.innerHTML = `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true">${html}</div></div>`;
+  const scrim = host.firstElementChild;
+  scrim.addEventListener("click", e => { if (e.target === scrim || e.target.closest("[data-close]")) closeSheet(); });
+  closeSheet._cb = onClose;
+  document.body.style.overflow = "hidden";
+  return scrim.firstElementChild;
+}
+function closeSheet(){
+  $("#sheetHost").innerHTML = ""; document.body.style.overflow = "";
+  const cb = closeSheet._cb; closeSheet._cb = null; cb && cb();
+}
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeSheet(); });
+const head = title => `<div class="sheet-head"><h2>${title}</h2><button class="icon-btn" data-close>✕</button></div>`;
+
+function peoplePicker(selected = []){
+  const others = Object.entries(S.users).filter(([uid]) => uid !== S.me.uid);
+  if (!others.length) return `<div class="hint">Nobody else has signed in yet. Once friends sign in, they'll show up here.</div>`;
+  return `<div class="people">${others.map(([uid,u]) =>
+    `<button type="button" class="person ${selected.includes(uid)?"on":""}" data-uid="${uid}"><img class="avatar" src="${esc(avatarUrl(u.photo,u.name))}" alt="">${esc(u.name)}</button>`).join("")}</div>`;
+}
+function bindPicker(root){
+  root.querySelectorAll(".person").forEach(p => p.onclick = () => p.classList.toggle("on"));
+  return () => [...root.querySelectorAll(".person.on")].map(p => p.dataset.uid);
+}
+
+/* ---------- Add song ---------- */
+function openAdd(){
+  let picked = null, timer = null, seq = 0;
+  const el = openSheet(`${head("Share a song")}
+    <div class="field">
+      <label>Search, or paste a Spotify / Apple Music / YouTube link</label>
+      <input class="input" id="addQ" placeholder="Song or artist…" autocomplete="off">
+    </div>
+    <div class="results" id="addResults"></div>
+    <div id="addForm" class="hidden">
+      <div id="addPicked"></div>
+      <div id="dupWarn"></div>
+      <div class="field"><label>Why should they listen? (optional)</label>
+        <textarea id="addNote" maxlength="500" placeholder="The bridge at 2:40 though…"></textarea></div>
+      <div class="field"><label>Send it to someone (optional)</label><div id="addPeople">${peoplePicker()}</div></div>
+      <label class="check"><input type="checkbox" id="addPl"> Suggest it for the group playlist</label>
+      <button class="btn primary" id="addSave" style="width:100%;height:46px;justify-content:center">Share song</button>
+    </div>`);
+  const qEl = el.querySelector("#addQ"), res = el.querySelector("#addResults");
+  const getPeople = bindPicker(el.querySelector("#addPeople"));
+  setTimeout(() => qEl.focus(), 50);
+
+  qEl.addEventListener("input", () => {
+    clearTimeout(timer);
+    const q = qEl.value.trim();
+    if (!q) { res.innerHTML = ""; return; }
+    timer = setTimeout(async () => {
+      const my = ++seq;
+      res.innerHTML = `<div class="hint"><span class="spin"></span> Looking it up…</div>`;
+      try {
+        const items = /^https?:\/\//i.test(q) ? await lookupLink(q) : await itunesSearch(q);
+        if (my !== seq) return;
+        res.innerHTML = items.length ? items.map((it,i) => `<button class="result" data-i="${i}">
+            <img src="${esc(it.artwork)}" alt=""><div class="meta"><div class="title">${esc(it.title)}</div>
+            <div class="artist">${esc(it.artist)}${it.album?" · "+esc(it.album):""}</div></div></button>`).join("")
+          : `<div class="hint">No songs found. Try the artist name too.</div>`;
+        res.querySelectorAll(".result").forEach(b => b.onclick = () => pick(items[+b.dataset.i]));
+      } catch (e) { if (my === seq) res.innerHTML = `<div class="hint">Lookup failed. Check your connection and try again.</div>`; }
+    }, /^https?:\/\//i.test(q) ? 50 : 350);
+  });
+
+  function pick(it){
+    picked = it;
+    res.innerHTML = "";
+    el.querySelector("#addForm").classList.remove("hidden");
+    el.querySelector("#addPicked").innerHTML = `<div class="picked"><img src="${esc(it.artwork)}" alt="">
+      <div class="meta"><div class="title">${esc(it.title)}</div><div class="artist">${esc(it.artist)}</div></div>
+      <button class="icon-btn" id="unpick">Change</button></div>`;
+    el.querySelector("#unpick").onclick = () => { picked = null; el.querySelector("#addForm").classList.add("hidden"); qEl.focus(); qEl.dispatchEvent(new Event("input")); };
+    const key = songKey(it), dup = S.songs.find(s => songKey(s) === key);
+    el.querySelector("#dupWarn").innerHTML = dup ? `<div class="note" style="margin-bottom:14px">${esc(dup.addedBy?.name)} already shared this one. You can still send it to someone from its card.</div>` : "";
+  }
+
+  el.querySelector("#addSave").onclick = async e => {
+    if (!picked) return;
+    const btn = e.currentTarget; btn.disabled = true; btn.innerHTML = `<span class="spin"></span> Getting links…`;
+    try {
+      const full = await enrich(picked);
+      const to = getPeople(), now = Date.now();
+      const data = {
+        ...full,
+        note: el.querySelector("#addNote").value.trim(),
+        addedBy: { uid:S.me.uid, name:S.me.name, photo:S.me.photo },
+        createdAt: serverTimestamp(),
+        reactions:{}, ratings:{}, listened:{}, commentCount:0,
+        sentTo: to, sends: to.map(uid => ({ to:uid, from:S.me.uid, fromName:S.me.name, at:now })),
+        playlist: el.querySelector("#addPl").checked ? "queued" : "none"
+      };
+      const ref = await addDoc(collection(db,"songs"), data);
+      closeSheet();
+      toast(to.length ? `Shared and sent to ${to.map(userName).join(", ")}` : "Song shared");
+      if (data.playlist === "queued" && spConnected()) playlistAction([{ id:ref.id, ...data }]);
+    } catch (err) { toast("Couldn't share: " + (err.code || err.message)); btn.disabled = false; btn.textContent = "Share song"; }
+  };
+}
+const songKey = s => `${s.title}|${s.artist}`.toLowerCase().replace(/\(.*?\)|\[.*?\]|feat\..*$/g,"").replace(/[^a-z0-9|]/g,"");
+
+/* ---------- Lookups ---------- */
+function jsonp(url, ms = 8000){
+  return new Promise((resolve, reject) => {
+    const cb = "mx_cb_" + Math.random().toString(36).slice(2);
+    const sc = document.createElement("script");
+    const done = () => { delete window[cb]; sc.remove(); clearTimeout(t); };
+    const t = setTimeout(() => { done(); reject(new Error("timeout")); }, ms);
+    window[cb] = d => { done(); resolve(d); };
+    sc.onerror = () => { done(); reject(new Error("network")); };
+    sc.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
+    document.head.appendChild(sc);
+  });
+}
+async function itunesSearch(term, limit = 8){
+  const d = await jsonp(`https://itunes.apple.com/search?media=music&entity=song&limit=${limit}&term=${encodeURIComponent(term)}`);
+  return (d.results||[]).map(r => ({
+    title: r.trackName, artist: r.artistName, album: r.collectionName || "",
+    artwork: (r.artworkUrl100||"").replace("100x100bb","600x600bb"),
+    previewUrl: r.previewUrl || "", appleUrl: r.trackViewUrl || "",
+    year: (r.releaseDate||"").slice(0,4), genre: r.primaryGenreName || ""
+  }));
+}
+async function odesli(url){
+  const r = await fetch(`https://api.song.link/v1-alpha.1/links?userCountry=US&url=${encodeURIComponent(url)}`);
+  if (!r.ok) throw new Error("songlink " + r.status);
+  return r.json();
+}
+function fromOdesli(d){
+  const lp = d.linksByPlatform || {};
+  const spId = (lp.spotify?.entityUniqueId || "").split("::")[1] || "";
+  return {
+    spotifyUrl: lp.spotify?.url || "", spotifyId: spId,
+    appleUrl: lp.appleMusic?.url || "", ytmUrl: lp.youtubeMusic?.url || "",
+    songLink: d.pageUrl || ""
+  };
+}
+async function lookupLink(url){
+  const d = await odesli(url);
+  const ent = d.entitiesByUniqueId?.[d.entityUniqueId];
+  if (!ent) return [];
+  let base = { title:ent.title, artist:ent.artistName, album:"", artwork:ent.thumbnailUrl||"", previewUrl:"", year:"", genre:"" };
+  try { // borrow preview + bigger art from iTunes
+    const m = (await itunesSearch(`${ent.title} ${ent.artistName}`, 1))[0];
+    if (m && songKey(m) === songKey(base)) base = { ...base, album:m.album, artwork:m.artwork||base.artwork, previewUrl:m.previewUrl, year:m.year, genre:m.genre };
+  } catch {}
+  return [{ ...base, ...fromOdesli(d), _resolved:true }];
+}
+async function enrich(it){
+  const out = { ...it }; delete out._resolved;
+  if (!it._resolved && it.appleUrl) {
+    try { Object.assign(out, fromOdesli(await odesli(it.appleUrl)), { appleUrl: it.appleUrl }); } catch {}
+  }
+  for (const k of ["spotifyUrl","spotifyId","ytmUrl","songLink","appleUrl"]) out[k] = out[k] || "";
+  return out;
+}
+
+/* ---------- Send to ---------- */
+function openSend(s){
+  const el = openSheet(`${head("Send to…")}
+    <div class="picked"><img src="${esc(s.artwork)}" alt=""><div class="meta"><div class="title">${esc(s.title)}</div><div class="artist">${esc(s.artist)}</div></div></div>
+    <div class="field"><label>Who should hear this?</label><div id="sendPeople">${peoplePicker()}</div></div>
+    <button class="btn primary" id="sendGo" style="width:100%;height:46px;justify-content:center">Send</button>`);
+  const get = bindPicker(el.querySelector("#sendPeople"));
+  el.querySelector("#sendGo").onclick = async () => {
+    const to = get(); if (!to.length) return toast("Pick at least one person");
+    const now = Date.now();
+    await update(s.id, { sentTo: arrayUnion(...to), sends: arrayUnion(...to.map(uid => ({ to:uid, from:S.me.uid, fromName:S.me.name, at:now }))) });
+    // re-sending makes it "new" again for them
+    await update(s.id, Object.fromEntries(to.map(uid => [`listened.${uid}`, deleteField()])));
+    closeSheet(); toast("Sent to " + to.map(userName).join(", "));
+  };
+}
+
+/* ---------- Detail + comments ---------- */
+let commentUnsub = null, comments = [];
+function openDetail(id){
+  S.openId = id; comments = [];
+  openSheet(`<div id="detailBody"></div>`, () => { S.openId = null; commentUnsub && commentUnsub(); commentUnsub = null; });
+  commentUnsub = onSnapshot(query(collection(db,"songs",id,"comments"), orderBy("createdAt","asc")), snap => {
+    comments = snap.docs.map(d => ({ id:d.id, ...d.data() })); refreshDetail();
+  });
+  refreshDetail();
+}
+function refreshDetail(){
+  const box = $("#detailBody"); if (!box) return;
+  const s = S.songs.find(x => x.id === S.openId);
+  if (!s) { closeSheet(); return; }
+  const draft = box.querySelector("#cText")?.value || "";
+  const L = links(s), mine = s.addedBy?.uid === S.me.uid;
+  const rated = Object.entries(s.ratings||{}), reacted = Object.entries(s.reactions||{}), heardBy = Object.keys(s.listened||{});
+  const sends = s.sends || [];
+  box.innerHTML = `${head(esc(s.title))}
+    ${s.artwork ? `<img class="detail-art" src="${esc(s.artwork)}" alt="">` : ""}
+    <div style="text-align:center;margin-bottom:14px"><div class="artist" style="font-size:16px">${esc(s.artist)}</div>
+      <div class="hint">${[s.album, s.year, s.genre].filter(Boolean).map(esc).join(" · ")}</div></div>
+    <div class="links" style="justify-content:center;margin-bottom:14px">
+      <a class="svc sp" href="${esc(L.spotify)}" target="_blank" rel="noopener"><i></i>Spotify</a>
+      <a class="svc am" href="${esc(L.apple)}" target="_blank" rel="noopener"><i></i>Apple Music</a>
+      <a class="svc yt" href="${esc(L.ytm)}" target="_blank" rel="noopener"><i></i>YouTube Music</a>
+      ${s.songLink ? `<a class="svc" href="${esc(s.songLink)}" target="_blank" rel="noopener">All services</a>` : ""}
+    </div>
+    <div class="by" style="justify-content:center;margin-bottom:10px"><img class="avatar sm" src="${esc(avatarUrl(s.addedBy?.photo,s.addedBy?.name))}" alt=""> Shared by ${esc(s.addedBy?.name)} · ${timeAgo(tsMs(s.createdAt))}</div>
+    ${s.note ? `<div class="note" style="margin-bottom:14px">${esc(s.note)}</div>` : ""}
+    ${rated.length || reacted.length || heardBy.length || sends.length ? `<div class="panel"><h3>The crew's take</h3><div class="who">
+      ${Object.keys(S.users).filter(uid => (s.ratings||{})[uid] || (s.reactions||{})[uid] || (s.listened||{})[uid]).map(uid => `<div>
+        <img class="avatar sm" src="${esc(avatarUrl(S.users[uid].photo, S.users[uid].name))}" alt="">${esc(S.users[uid].name)}
+        ${(s.reactions||{})[uid] || ""} ${(s.listened||{})[uid] ? `<span class="hint">listened</span>` : ""}
+        <span class="r">${"★".repeat((s.ratings||{})[uid]||0)}</span></div>`).join("")}
+      </div>${sends.length ? `<div class="hint">${sends.map(x => `${esc(x.fromName)} → ${esc(userName(x.to))}`).join(" · ")}</div>` : ""}</div>` : ""}
+    <div class="panel"><h3>Comments</h3>
+      ${comments.length ? comments.map(c => `<div class="comment"><img class="avatar" src="${esc(avatarUrl(c.photo,c.name))}" alt="">
+        <div class="body"><b>${esc(c.name)}</b><span class="time">${timeAgo(tsMs(c.createdAt))}</span>
+        ${c.uid === S.me.uid ? `<button class="hint" data-del-c="${c.id}" style="float:right">Delete</button>` : ""}<div>${esc(c.text)}</div></div></div>`).join("")
+        : `<div class="hint">No comments yet. Start it off.</div>`}
+      <form class="comment-form" id="cForm"><input class="input" id="cText" maxlength="500" placeholder="Say something…" autocomplete="off"><button class="btn primary">Post</button></form>
+    </div>
+    <div class="btnrow">
+      <button class="btn" data-action="send" data-id="${s.id}">Send to…</button>
+      ${playlistBtn(s)}
+      ${mine ? `<button class="btn danger" id="delSong" style="margin-left:auto">Delete</button>` : ""}
+    </div>`;
+  const ct = box.querySelector("#cText"); ct.value = draft;
+  box.querySelector("#cForm").onsubmit = async e => {
+    e.preventDefault(); const text = ct.value.trim(); if (!text) return;
+    ct.value = "";
+    try {
+      await addDoc(collection(db,"songs",s.id,"comments"), { uid:S.me.uid, name:S.me.name, photo:S.me.photo, text, createdAt:serverTimestamp() });
+      update(s.id, { commentCount: increment(1) });
+    } catch (err) { ct.value = text; toast("Couldn't post: " + err.code); }
+  };
+  box.querySelectorAll("[data-del-c]").forEach(b => b.onclick = async () => {
+    try { await deleteDoc(doc(db,"songs",s.id,"comments",b.dataset.delC)); update(s.id, { commentCount: increment(-1) }); }
+    catch (err) { toast("Couldn't delete: " + err.code); }
+  });
+  const del = box.querySelector("#delSong");
+  if (del) del.onclick = async () => {
+    if (!confirm(`Delete "${s.title}" from Mixtape? Comments go with it.`)) return;
+    try { await deleteDoc(doc(db,"songs",s.id)); closeSheet(); toast("Deleted"); } catch (err) { toast("Couldn't delete: " + err.code); }
+  };
+}
+
+/* ---------- Settings ---------- */
+function openSettings(){
+  const st = S.settings, redirect = redirectUri();
+  const queued = S.songs.filter(s => s.playlist === "queued");
+  const el = openSheet(`${head("Settings")}
+    <div class="panel"><div class="row"><img class="avatar" src="${esc(avatarUrl(S.me.photo,S.me.name))}" alt="">
+      <div class="meta"><div class="title">${esc(S.me.name)}</div><div class="hint">${Object.keys(S.users).length} people in the crew</div></div>
+      <button class="btn" id="signOut">Sign out</button></div></div>
+
+    <div class="panel"><h3>Group playlist</h3>
+      <div class="field"><label>Spotify playlist link</label>
+        <input class="input" id="plUrl" placeholder="https://open.spotify.com/playlist/…" value="${esc(st.playlistUrl||"")}"></div>
+      <div class="hint" style="margin-bottom:10px">Make it <b>collaborative</b> in Spotify (playlist ⋯ → Invite collaborators) so friends who connect can add to it.</div>
+      <button class="btn primary" id="plSave">Save playlist</button>
+    </div>
+
+    <div class="panel"><h3>Spotify on this device</h3>
+      <div class="status" style="margin-bottom:10px"><span class="dot ${spConnected()?"on":""}"></span>${spConnected()?"Connected: + Playlist adds songs instantly":"Not connected: + Playlist queues songs instead"}</div>
+      <div class="btnrow" style="margin-bottom:10px">
+        ${spConnected() ? `<button class="btn" id="spOff">Disconnect</button>` : `<button class="btn primary" id="spOn">Connect Spotify</button>`}
+        ${queued.length && spConnected() ? `<button class="btn queued" id="spFlush">Add ${queued.length} queued song${queued.length>1?"s":""}</button>` : ""}
+      </div>
+      ${queued.length && !spConnected() ? `<div class="hint">${queued.length} song${queued.length>1?"s are":" is"} waiting to go in. Anyone connected to Spotify can add ${queued.length>1?"them":"it"}.</div>` : ""}
+      <details style="margin-top:10px"><summary class="hint" style="cursor:pointer">Spotify app settings (one-time setup)</summary>
+        <div class="field" style="margin-top:10px"><label>Spotify Client ID</label>
+          <input class="input" id="spCid" placeholder="From developer.spotify.com" value="${esc(st.spotifyClientId||"")}"></div>
+        <div class="hint">Redirect URI to paste into the Spotify app:</div>
+        <code class="code">${esc(redirect)}</code>
+        <div class="btnrow"><button class="btn" id="copyRedir">Copy redirect URI</button><button class="btn primary" id="spCidSave">Save Client ID</button></div>
+        <div class="hint" style="margin-top:8px">Spotify's personal-app rules: max 5 connected people, the app owner needs Premium, and each person must be added under User Management in the Spotify dashboard.</div>
+      </details>
+    </div>`);
+
+  el.querySelector("#signOut").onclick = () => { closeSheet(); signOut(auth); };
+  el.querySelector("#plSave").onclick = async () => {
+    const url = el.querySelector("#plUrl").value.trim();
+    if (url && !playlistId(url)) return toast("That doesn't look like a Spotify playlist link");
+    await saveSettings({ playlistUrl:url, playlistId:playlistId(url) || "" }); toast("Playlist saved");
+  };
+  el.querySelector("#spCidSave").onclick = async () => {
+    await saveSettings({ spotifyClientId: el.querySelector("#spCid").value.trim() }); toast("Client ID saved");
+  };
+  el.querySelector("#copyRedir").onclick = () => navigator.clipboard?.writeText(redirect).then(() => toast("Copied"), () => toast("Copy failed"));
+  el.querySelector("#spOn")?.addEventListener("click", spConnect);
+  el.querySelector("#spOff")?.addEventListener("click", () => { store.del("mx_sp_tok"); toast("Disconnected"); openSettings(); render(); });
+  el.querySelector("#spFlush")?.addEventListener("click", async e => { await playlistAction(queued, e.currentTarget); openSettings(); });
+}
+async function saveSettings(data){
+  try { await setDoc(doc(db,"settings","group"), data, { merge:true }); }
+  catch (e) { toast("Couldn't save: " + e.code); throw e; }
+}
+const playlistId = url => (String(url).match(/playlist[/:]([A-Za-z0-9]{10,})/) || [])[1];
+
+/* =========================================================
+   Spotify (Authorization Code + PKCE, all in the browser)
+   ========================================================= */
+const SP_SCOPES = "playlist-modify-public playlist-modify-private";
+const redirectUri = () => location.origin + location.pathname.replace(/index\.html$/, "");
+const spConnected = () => !!store.get("mx_sp_tok")?.refresh;
+const b64url = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+
+async function spConnect(){
+  const cid = S.settings.spotifyClientId;
+  if (!cid) return toast("Add the Spotify Client ID first (under Spotify app settings)");
+  const verifier = b64url(crypto.getRandomValues(new Uint8Array(48)));
+  const challenge = b64url(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier)));
+  const state = b64url(crypto.getRandomValues(new Uint8Array(12)));
+  store.set("mx_sp_pkce", { verifier, state, cid });
+  location.href = "https://accounts.spotify.com/authorize?" + new URLSearchParams({
+    client_id: cid, response_type: "code", redirect_uri: redirectUri(),
+    code_challenge_method: "S256", code_challenge: challenge, scope: SP_SCOPES, state
+  });
+}
+async function spHandleCallback(){
+  const p = new URLSearchParams(location.search);
+  if (!p.has("code") && !p.has("error")) return;
+  const pk = store.get("mx_sp_pkce"); store.del("mx_sp_pkce");
+  history.replaceState(null, "", redirectUri());
+  if (p.get("error")) return toast("Spotify connection cancelled");
+  if (!pk || pk.state !== p.get("state")) return toast("Spotify connection expired. Try again.");
+  try {
+    const r = await fetch("https://accounts.spotify.com/api/token", { method:"POST",
+      headers:{ "Content-Type":"application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ grant_type:"authorization_code", code:p.get("code"), redirect_uri:redirectUri(), client_id:pk.cid, code_verifier:pk.verifier }) });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error_description || d.error);
+    store.set("mx_sp_tok", { access:d.access_token, refresh:d.refresh_token, exp:Date.now() + d.expires_in*1000, cid:pk.cid });
+    toast("Spotify connected 🎧"); render();
+  } catch (e) { toast("Spotify said no: " + e.message, 5000); }
+}
+async function spToken(force = false){
+  const t = store.get("mx_sp_tok"); if (!t) return null;
+  if (!force && Date.now() < t.exp - 60000) return t.access;
+  const r = await fetch("https://accounts.spotify.com/api/token", { method:"POST",
+    headers:{ "Content-Type":"application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ grant_type:"refresh_token", refresh_token:t.refresh, client_id:t.cid }) });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) { store.del("mx_sp_tok"); render(); throw new Error("Spotify login expired. Reconnect in Settings."); }
+  store.set("mx_sp_tok", { ...t, access:d.access_token, refresh:d.refresh_token || t.refresh, exp:Date.now() + d.expires_in*1000 });
+  return d.access_token;
+}
+async function spFetch(path, opts = {}, retry = true){
+  const tok = await spToken();
+  const r = await fetch("https://api.spotify.com/v1" + path, { ...opts, headers:{ ...(opts.headers||{}), Authorization:"Bearer " + tok, "Content-Type":"application/json" } });
+  if (r.status === 401 && retry) { await spToken(true); return spFetch(path, opts, false); }
+  if (!r.ok) {
+    const d = await r.json().catch(() => ({}));
+    const msg = r.status === 403 ? "Spotify blocked it. Make sure the playlist is collaborative and you're on the app's user list."
+      : r.status === 429 ? "Spotify's rate limit hit. Try again in a minute."
+      : (d.error?.message || "Spotify error " + r.status);
+    throw new Error(msg);
+  }
+  return r.status === 204 ? null : r.json().catch(() => null);
+}
+async function spFindId(s){
+  if (s.spotifyId) return s.spotifyId;
+  const clean = x => String(x).replace(/\(.*?\)|\[.*?\]|"/g, "").trim();
+  const d = await spFetch(`/search?type=track&limit=1&q=${encodeURIComponent(`track:${clean(s.title)} artist:${clean(s.artist)}`)}`);
+  const id = d?.tracks?.items?.[0]?.id;
+  if (id) update(s.id, { spotifyId:id, spotifyUrl: s.spotifyUrl || `https://open.spotify.com/track/${id}` });
+  return id;
+}
+async function playlistAction(songs, btn){
+  if (!spConnected() || !S.settings.playlistId) {
+    const fresh = songs.filter(s => s.playlist !== "queued");
+    await Promise.all(fresh.map(s => update(s.id, { playlist:"queued", playlistBy:S.me.uid })));
+    if (!S.settings.playlistId) return toast("Queued. Add a group playlist in Settings to send it over.");
+    return toast(fresh.length ? "Queued for the playlist. Someone connected to Spotify can add it." : "Already queued");
+  }
+  const label = btn?.innerHTML; if (btn) { btn.disabled = true; btn.innerHTML = `<span class="spin"></span> Adding…`; }
+  try {
+    const found = [], missing = [];
+    for (const s of songs) { const id = await spFindId(s); id ? found.push({ s, id }) : missing.push(s); }
+    for (let i = 0; i < found.length; i += 100) {
+      await spFetch(`/playlists/${S.settings.playlistId}/items`, { method:"POST", body: JSON.stringify({ uris: found.slice(i, i+100).map(x => "spotify:track:" + x.id) }) });
+    }
+    await Promise.all(found.map(x => update(x.s.id, { playlist:"added", playlistBy:S.me.uid })));
+    toast(missing.length ? `Added ${found.length}. Couldn't find "${missing[0].title}" on Spotify.` : `Added to the playlist 🎉`, 4000);
+  } catch (e) { toast(e.message, 5000); }
+  finally { if (btn && document.body.contains(btn)) { btn.disabled = false; btn.innerHTML = label; } }
+}
+
+/* ---------- PWA ---------- */
+if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
+</script>
+</body>
+</html>
