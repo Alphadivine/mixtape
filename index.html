@@ -301,8 +301,7 @@ audio.addEventListener("ended", () => { S.playingId = null; render(); });
 /* ---------- Boot ---------- */
 let db, auth;
 const configured = !Object.values(FIREBASE_CONFIG).some(v => String(v).startsWith("PASTE"));
-if (!configured) { $("#setupGate").classList.remove("hidden"); }
-else boot();
+// (boot() is started at the very bottom of this script, once everything is defined)
 
 function boot(){
   const app = initializeApp(FIREBASE_CONFIG);
@@ -324,6 +323,7 @@ function boot(){
     if (!user) { S.me = null; $("#app").classList.add("hidden"); $("#signinGate").classList.remove("hidden"); return; }
     S.me = { uid:user.uid, name:user.displayName || user.email.split("@")[0], photo:user.photoURL || "" };
     $("#signinGate").classList.add("hidden"); $("#app").classList.remove("hidden");
+    if (S.reopenSettings) setTimeout(() => { S.reopenSettings = false; openSettings(); }, 400);
     $("#meAvatar").src = avatarUrl(S.me.photo, S.me.name);
     setDoc(doc(db,"users",user.uid), { name:S.me.name, photo:S.me.photo, lastSeen:serverTimestamp() }, { merge:true }).catch(()=>{});
 
@@ -754,8 +754,9 @@ function openSettings(){
         ${spConnected() ? `<button class="btn" id="spOff">Disconnect</button>` : `<button class="btn primary" id="spOn">Connect Spotify</button>`}
         ${queued.length && spConnected() ? `<button class="btn queued" id="spFlush">Add ${queued.length} queued song${queued.length>1?"s":""}</button>` : ""}
       </div>
+      ${spLast() ? `<div class="note" style="margin-bottom:10px;${spLast().ok?"":"border:1px solid var(--bad)"}">${esc(spLast().msg)}</div>` : ""}
       ${queued.length && !spConnected() ? `<div class="hint">${queued.length} song${queued.length>1?"s are":" is"} waiting to go in. Anyone connected to Spotify can add ${queued.length>1?"them":"it"}.</div>` : ""}
-      <details style="margin-top:10px"><summary class="hint" style="cursor:pointer">Spotify app settings (one-time setup)</summary>
+      <details id="spDetails" style="margin-top:10px" ${st.spotifyClientId ? "" : "open"}><summary class="hint" style="cursor:pointer">Spotify app settings (one-time setup)</summary>
         <div class="field" style="margin-top:10px"><label>Spotify Client ID</label>
           <input class="input" id="spCid" placeholder="From developer.spotify.com" value="${esc(st.spotifyClientId||"")}"></div>
         <div class="hint">Redirect URI to paste into the Spotify app:</div>
@@ -775,7 +776,13 @@ function openSettings(){
     await saveSettings({ spotifyClientId: el.querySelector("#spCid").value.trim() }); toast("Client ID saved");
   };
   el.querySelector("#copyRedir").onclick = () => navigator.clipboard?.writeText(redirect).then(() => toast("Copied"), () => toast("Copy failed"));
-  el.querySelector("#spOn")?.addEventListener("click", spConnect);
+  el.querySelector("#spOn")?.addEventListener("click", () => {
+    if (!S.settings.spotifyClientId) {
+      spSetLast(false, "Paste your Spotify Client ID below and tap Save Client ID first, then Connect Spotify.");
+      openSettings(); setTimeout(() => $("#spCid")?.focus(), 50); return;
+    }
+    spConnect();
+  });
   el.querySelector("#spOff")?.addEventListener("click", () => { store.del("mx_sp_tok"); toast("Disconnected"); openSettings(); render(); });
   el.querySelector("#spFlush")?.addEventListener("click", async e => { await playlistAction(queued, e.currentTarget); openSettings(); });
 }
@@ -791,6 +798,17 @@ const playlistId = url => (String(url).match(/playlist[/:]([A-Za-z0-9]{10,})/) |
 const SP_SCOPES = "playlist-modify-public playlist-modify-private";
 const redirectUri = () => location.origin + location.pathname.replace(/index\.html$/, "");
 const spConnected = () => !!store.get("mx_sp_tok")?.refresh;
+const spLast = () => store.get("mx_sp_last");
+function spSetLast(ok, msg){
+  store.set("mx_sp_last", { ok, msg, at: Date.now() });
+  if (!ok) console.warn("[Mixtape] Spotify:", msg);
+  if ($("#spDetails")) openSettings(); // refresh the open Settings panel
+}
+const SP_ERRORS = {
+  access_denied: "You (or Spotify) declined the connection. If you didn't tap Cancel, make sure your Spotify email is added under User Management in the Spotify developer dashboard.",
+  invalid_scope: "Spotify rejected the permissions Mixtape asked for.",
+  unsupported_response_type: "Spotify rejected the sign-in request type."
+};
 const b64url = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
 
 async function spConnect(){
@@ -810,8 +828,9 @@ async function spHandleCallback(){
   if (!p.has("code") && !p.has("error")) return;
   const pk = store.get("mx_sp_pkce"); store.del("mx_sp_pkce");
   history.replaceState(null, "", redirectUri());
-  if (p.get("error")) return toast("Spotify connection cancelled");
-  if (!pk || pk.state !== p.get("state")) return toast("Spotify connection expired. Try again.");
+  S.reopenSettings = true;
+  if (p.get("error")) { spSetLast(false, "Spotify said: " + (SP_ERRORS[p.get("error")] || p.get("error"))); return; }
+  if (!pk || pk.state !== p.get("state")) { spSetLast(false, "The connection got lost on the way back from Spotify (it may have opened in a different tab or browser). Tap Connect Spotify again."); return; }
   try {
     const r = await fetch("https://accounts.spotify.com/api/token", { method:"POST",
       headers:{ "Content-Type":"application/x-www-form-urlencoded" },
@@ -819,8 +838,12 @@ async function spHandleCallback(){
     const d = await r.json();
     if (!r.ok) throw new Error(d.error_description || d.error);
     store.set("mx_sp_tok", { access:d.access_token, refresh:d.refresh_token, exp:Date.now() + d.expires_in*1000, cid:pk.cid });
+    spSetLast(true, "Spotify connected 🎧 + Playlist now adds songs instantly on this device.");
     toast("Spotify connected 🎧"); render();
-  } catch (e) { toast("Spotify said no: " + e.message, 5000); }
+  } catch (e) {
+    const m = String(e.message || e);
+    spSetLast(false, "Spotify said no: " + m + (/redirect/i.test(m) ? ` — the Redirect URI in the Spotify dashboard must be exactly ${redirectUri()}` : ""));
+  }
 }
 async function spToken(force = false){
   const t = store.get("mx_sp_tok"); if (!t) return null;
@@ -873,6 +896,10 @@ async function playlistAction(songs, btn){
   } catch (e) { toast(e.message, 5000); }
   finally { if (btn && document.body.contains(btn)) { btn.disabled = false; btn.innerHTML = label; } }
 }
+
+/* ---------- Start ---------- */
+if (!configured) $("#setupGate").classList.remove("hidden");
+else boot();
 
 /* ---------- PWA ---------- */
 if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});

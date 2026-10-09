@@ -38,4 +38,4 @@ See `Docs/Setup guide.md` in the app bundle.
 Spotify sign-in tokens stay on each person's device (browser storage) and are never written to Firestore.
 
 ---
-Last updated: 2026-10-08
+Last updated: 2026-10-09
