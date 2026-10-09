@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10 — Remove songs from the playlist
+- New "Remove from playlist" button on songs that are in the group Spotify playlist; anyone connected to Spotify can use it, and the song stays in Mixtape
+- Deleting a song you shared now also takes it off the Spotify playlist when you're connected (and warns you if you're not, since it would stay there)
+
 ## 2026-10 — Fix Spotify connect
 - Fixed: returning from Spotify after tapping Connect Spotify silently failed (the app started before the Spotify code was loaded), so the page just reloaded with no connection
 - Settings now reopens after the Spotify round-trip and shows the result in plain words (connected, declined, wrong redirect URI, etc.) instead of a quick toast

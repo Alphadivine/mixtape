@@ -430,7 +430,8 @@ function card(s, inboxView = false){
   </article>`;
 }
 function playlistBtn(s){
-  if (s.playlist === "added") return `<button class="btn ok" disabled>✓ In playlist</button>`;
+  if (s.playlist === "added") return `<button class="btn ok" disabled>✓ In playlist</button>`
+    + (spConnected() ? `<button class="btn danger" data-action="unplaylist" data-id="${s.id}">Remove from playlist</button>` : "");
   if (s.playlist === "queued") return spConnected()
     ? `<button class="btn queued" data-action="playlist" data-id="${s.id}">Queued · add now</button>`
     : `<button class="btn queued" disabled>Queued for playlist</button>`;
@@ -470,6 +471,9 @@ document.addEventListener("click", async e => {
     }
     case "heard": return update(id, { [`listened.${S.me.uid}`]: heard(s) ? deleteField() : true });
     case "playlist": return playlistAction([s], t);
+    case "unplaylist":
+      if (!confirm(`Take "${s.title}" off the group Spotify playlist? It stays in Mixtape.`)) return;
+      return playlistRemove(s, t);
   }
 });
 $("#search").addEventListener("input", e => { S.q = e.target.value; render(); });
@@ -727,8 +731,17 @@ function refreshDetail(){
   });
   const del = box.querySelector("#delSong");
   if (del) del.onclick = async () => {
-    if (!confirm(`Delete "${s.title}" from Mixtape? Comments go with it.`)) return;
-    try { await deleteDoc(doc(db,"songs",s.id)); closeSheet(); toast("Deleted"); } catch (err) { toast("Couldn't delete: " + err.code); }
+    const inPl = s.playlist === "added";
+    const msg = `Delete "${s.title}" from Mixtape? Comments go with it.`
+      + (inPl ? (spConnected() ? "\n\nIt will also be taken off the Spotify playlist."
+                               : "\n\nYou're not connected to Spotify, so it will stay in the Spotify playlist. Connect Spotify in Settings first if you want it removed there too.") : "");
+    if (!confirm(msg)) return;
+    if (inPl && spConnected()) {
+      const ok = await playlistRemove(s, del, true);
+      if (!ok && !confirm("Couldn't take it off the Spotify playlist. Delete it from Mixtape anyway?")) return;
+    }
+    try { await deleteDoc(doc(db,"songs",s.id)); closeSheet(); toast(inPl && spConnected() ? "Deleted and removed from the playlist" : "Deleted"); }
+    catch (err) { toast("Couldn't delete: " + err.code); }
   };
 }
 
@@ -876,6 +889,20 @@ async function spFindId(s){
   const id = d?.tracks?.items?.[0]?.id;
   if (id) update(s.id, { spotifyId:id, spotifyUrl: s.spotifyUrl || `https://open.spotify.com/track/${id}` });
   return id;
+}
+async function playlistRemove(s, btn, quiet = false){
+  if (!spConnected() || !S.settings.playlistId) { toast("Connect Spotify in Settings to remove songs from the playlist"); return false; }
+  const label = btn?.innerHTML; if (btn) { btn.disabled = true; btn.innerHTML = `<span class="spin"></span> Removing…`; }
+  try {
+    const id = await spFindId(s);
+    if (!id) throw new Error(`Couldn't find "${s.title}" on Spotify`);
+    // Removes every copy of this track from the playlist
+    await spFetch(`/playlists/${S.settings.playlistId}/items`, { method:"DELETE", body: JSON.stringify({ items: [{ uri: "spotify:track:" + id }] }) });
+    await update(s.id, { playlist:"none", playlistBy:S.me.uid });
+    if (!quiet) toast("Removed from the playlist");
+    return true;
+  } catch (e) { toast(e.message, 5000); return false; }
+  finally { if (btn && document.body.contains(btn)) { btn.disabled = false; btn.innerHTML = label; } }
 }
 async function playlistAction(songs, btn){
   if (!spConnected() || !S.settings.playlistId) {

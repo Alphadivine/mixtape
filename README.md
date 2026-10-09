@@ -11,7 +11,7 @@ A small, private place for a group of friends to share songs with each other, re
 - **Mark listened**: track what you've heard; "New to me" filter shows only what you haven't.
 - **Comments**: a thread on every song.
 - **Send to a person**: recommend a song straight to specific friends. It lands in their **Inbox** with a badge until they listen.
-- **Group playlist**: one tap opens the shared Spotify playlist. **+ Playlist** adds a song instantly if you've connected Spotify, or queues it so someone connected can add the whole queue at once.
+- **Group playlist**: one tap opens the shared Spotify playlist. **+ Playlist** adds a song instantly if you've connected Spotify, or queues it so someone connected can add the whole queue at once. Anyone connected can also **Remove from playlist**, and deleting a song you shared takes it off the playlist too.
 - **Filters & search**: All, New to me, Top rated, Playlist, Shared by me.
 - **Installable**: add to your phone's home screen like an app.
 
