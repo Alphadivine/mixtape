@@ -16,119 +16,179 @@
 :root{
   --bg:#0f0d13; --surface:#18151e; --surface2:#221e2a; --line:#2f2a38;
   --text:#f3eef7; --muted:#a69fb2; --accent:#ff6b3d; --accent2:#ffc857; --good:#5fd38d; --bad:#ff5d6c;
-  --radius:16px;
+  --radius:16px; --nav:68px; --player:0px;
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--text);font-family:"DM Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
-body{min-height:100vh;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+body{min-height:100vh;padding-bottom:calc(var(--nav) + var(--player) + 20px + env(safe-area-inset-bottom))}
+body.has-player{--player:64px}
 button,input,textarea{font:inherit;color:inherit}
-button{cursor:pointer;border:0;background:none}
+button{cursor:pointer;border:0;background:none;padding:0}
 a{color:inherit}
 h1,h2,h3{font-family:"Bricolage Grotesque",sans-serif;margin:0}
 .hidden{display:none!important}
 .wrap{max-width:760px;margin:0 auto;padding:0 16px}
+svg.i{width:18px;height:18px;flex:none}
 
 /* Header */
 header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-header .wrap{display:flex;align-items:center;gap:12px;height:60px}
+header .wrap{display:flex;align-items:center;gap:12px;height:58px}
 .brand{display:flex;align-items:center;gap:10px;font-family:"Bricolage Grotesque";font-weight:800;font-size:22px;letter-spacing:-.02em}
 .brand svg{width:34px;height:34px}
 .spacer{flex:1}
 .icon-btn{height:38px;min-width:38px;padding:0 12px;border-radius:999px;background:var(--surface2);display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:14px;font-weight:500}
 .icon-btn:hover{background:var(--line)}
 .avatar{width:32px;height:32px;border-radius:50%;object-fit:cover;background:var(--surface2);flex:none}
-.avatar.sm{width:20px;height:20px}
-.avatar-btn{padding:0;border-radius:50%;width:38px;height:38px;display:grid;place-items:center;background:var(--surface2)}
+.avatar.sm{width:18px;height:18px}
+.avatar.lg{width:56px;height:56px}
+.avatar-btn{border-radius:50%;width:38px;height:38px;display:grid;place-items:center;background:var(--surface2)}
 
 /* Toolbar */
-.toolbar{padding:16px 0 8px;display:flex;flex-direction:column;gap:10px}
+.toolbar{padding:14px 0 6px;display:flex;flex-direction:column;gap:10px}
 .search{width:100%;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface);padding:0 14px;outline:none}
 .search:focus{border-color:var(--accent)}
 .chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
 .chips::-webkit-scrollbar{display:none}
-.chip{flex:none;height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:14px;color:var(--muted);font-weight:500}
+.chip{flex:none;height:32px;padding:0 13px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:13px;color:var(--muted);font-weight:600;white-space:nowrap}
 .chip.on{background:var(--text);color:var(--bg);border-color:var(--text)}
-.section-title{display:flex;align-items:baseline;justify-content:space-between;margin:14px 0 8px}
+.chip.mtag.on{background:var(--accent2);border-color:var(--accent2);color:#1d1404}
+.playall{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border-radius:14px;background:linear-gradient(90deg,color-mix(in srgb,var(--accent) 22%,var(--surface)),var(--surface));border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));text-align:left;margin:6px 0 4px}
+.playall .pi{width:36px;height:36px;border-radius:50%;background:var(--accent);color:#1a0d07;display:grid;place-items:center;flex:none}
+.playall .pi svg{width:15px;height:15px}
+.playall b{display:block;font-size:15px}
+.playall span{font-size:12px;color:var(--muted)}
+.section-title{display:flex;align-items:baseline;justify-content:space-between;margin:16px 0 8px}
 .section-title h2{font-size:20px}
 .section-title span{color:var(--muted);font-size:14px}
+.divider{display:flex;align-items:center;gap:10px;color:var(--accent2);font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin:4px 0}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:color-mix(in srgb,var(--accent2) 45%,transparent)}
 
-/* Cards */
-.list{display:flex;flex-direction:column;gap:12px;padding-bottom:16px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:12px}
+/* Cards (slim) */
+.list{display:flex;flex-direction:column;gap:10px;padding:6px 0 16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px;display:flex;flex-direction:column;gap:10px}
 .card.unheard{border-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
+.card.playing{border-color:var(--accent2)}
 .row{display:flex;gap:12px;align-items:center}
-.art{position:relative;width:76px;height:76px;border-radius:12px;overflow:hidden;flex:none;background:var(--surface2)}
+.art{position:relative;width:64px;height:64px;border-radius:11px;overflow:hidden;flex:none;background:var(--surface2)}
 .art img{width:100%;height:100%;object-fit:cover;display:block}
-.play{position:absolute;inset:auto 6px 6px auto;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.65);display:grid;place-items:center;color:#fff}
-.play svg{width:14px;height:14px}
-.meta{min-width:0;flex:1}
+.play{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.25);color:#fff}
+.play span{width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.7);display:grid;place-items:center}
+.play svg{width:13px;height:13px}
+.meta{min-width:0;flex:1;cursor:pointer}
 .title{font-weight:700;font-size:16px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.artist{color:var(--muted);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.by{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:13px;margin-top:6px}
-.tag{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:var(--accent);color:#1a0d07}
-.tag.soft{background:var(--surface2);color:var(--muted)}
-.note{background:var(--surface2);border-radius:12px;padding:10px 12px;font-size:14px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
-.links{display:flex;gap:8px;flex-wrap:wrap}
-.svc{height:32px;padding:0 12px;border-radius:999px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:6px;text-decoration:none;border:1px solid var(--line);background:var(--surface2)}
-.svc i{width:8px;height:8px;border-radius:50%;display:inline-block}
-.svc.sp i{background:#1ed760}.svc.am i{background:#fa2d48}.svc.yt i{background:#ff0033}
-.actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:10px}
-.react{height:32px;min-width:40px;padding:0 9px;border-radius:999px;background:var(--surface2);font-size:15px;display:inline-flex;align-items:center;gap:4px;border:1px solid transparent}
-.react b{font-size:12px;color:var(--muted);font-weight:700}
+.artist{color:var(--muted);font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.by{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12.5px;margin-top:5px;flex-wrap:wrap;row-gap:4px}
+.tag{font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:999px;background:var(--accent);color:#1a0d07}
+.tag.gold{background:transparent;color:var(--accent2);padding:0;letter-spacing:0;font-size:12px;text-transform:none}
+.moods{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+.mood{font-size:11.5px;font-weight:600;color:var(--accent2);background:color-mix(in srgb,var(--accent2) 12%,transparent);padding:2px 8px;border-radius:999px}
+.note{background:var(--surface2);border-radius:12px;padding:9px 12px;font-size:14px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+.bar{display:flex;align-items:center;gap:4px;flex-wrap:wrap;row-gap:8px}
+.react{height:32px;min-width:34px;padding:0 6px;border-radius:999px;background:var(--surface2);font-size:15px;display:inline-flex;align-items:center;justify-content:center;gap:3px;border:1px solid transparent}
+.react b{font-size:11.5px;color:var(--muted);font-weight:700}
 .react.mine{border-color:var(--accent2);background:color-mix(in srgb,var(--accent2) 16%,var(--surface2))}
-.stars{display:inline-flex;gap:1px;margin-left:auto;align-items:center}
-.star{font-size:19px;line-height:1;color:var(--line);padding:2px}
+.stars{display:inline-flex;margin-left:auto;align-items:center}
+.star{font-size:19px;line-height:1;color:var(--line);padding:2px 1px}
 .star.on{color:var(--accent2)}
-.avg{font-size:12px;color:var(--muted);margin-left:4px;font-weight:700}
+.bar2{display:flex;align-items:center;gap:5px;border-top:1px solid var(--line);padding-top:10px;flex-wrap:wrap;row-gap:8px}
+.svc{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--surface2);flex:none}
+.svc:hover{background:var(--line)}
+.svc svg{width:18px;height:18px}
+.ib{height:30px;min-width:30px;padding:0 8px;border-radius:999px;background:var(--surface2);display:inline-flex;align-items:center;justify-content:center;gap:4px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.ib:hover{background:var(--line);color:var(--text)}
+.ib svg{width:16px;height:16px}
+.ib.ok{color:var(--good);background:color-mix(in srgb,var(--good) 14%,var(--surface2))}
+.ib.queued{color:var(--accent2);background:color-mix(in srgb,var(--accent2) 14%,var(--surface2))}
+.ib.add{color:var(--text)}
+@media (max-width:359px){.ib .lbl{display:none}}
 .btnrow{display:flex;gap:8px;flex-wrap:wrap}
-.btn{height:36px;padding:0 14px;border-radius:10px;background:var(--surface2);font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.btn{height:38px;padding:0 14px;border-radius:10px;background:var(--surface2);font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
 .btn:hover{background:var(--line)}
 .btn.primary{background:var(--accent);color:#1a0d07}
 .btn.primary:hover{filter:brightness(1.08)}
 .btn.ok{background:color-mix(in srgb,var(--good) 18%,var(--surface2));color:var(--good)}
 .btn.queued{background:color-mix(in srgb,var(--accent2) 16%,var(--surface2));color:var(--accent2)}
 .btn.danger{color:var(--bad)}
-.btn:disabled{opacity:.5;cursor:default}
+.btn:disabled{opacity:.55;cursor:default}
 .empty{text-align:center;color:var(--muted);padding:48px 16px;line-height:1.5}
 .empty h3{color:var(--text);margin-bottom:6px;font-size:20px}
 
+/* Crew */
+.hl-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0 14px}
+.hl{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:6px;min-width:0;text-align:left}
+.hl small{color:var(--muted);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.hl .who{display:flex;align-items:center;gap:8px;font-weight:700;min-width:0}
+.hl .who span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hl em{font-style:normal;color:var(--accent2);font-size:13px;font-weight:700}
+.person-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;align-items:center;gap:12px;width:100%;text-align:left}
+.person-card:hover{border-color:var(--muted)}
+.pill{font-size:12px;font-weight:800;padding:4px 9px;border-radius:999px;background:var(--surface2);color:var(--muted);white-space:nowrap}
+.pill.hot{background:color-mix(in srgb,var(--good) 18%,var(--surface2));color:var(--good)}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.stat{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.stat b{display:block;font-family:"Bricolage Grotesque";font-size:22px}
+.stat span{font-size:11.5px;color:var(--muted);font-weight:600}
+.mini{display:flex;align-items:center;gap:10px;padding:8px;border-radius:12px;background:var(--bg);border:1px solid var(--line);width:100%;text-align:left}
+.mini img{width:40px;height:40px;border-radius:8px;object-fit:cover;flex:none;background:var(--surface2)}
+.mini .r{margin-left:auto;color:var(--accent2);font-size:12px;font-weight:700;white-space:nowrap}
+
 /* Bottom nav */
-nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
-nav.tabs .wrap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:68px}
-.tab{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--muted);font-weight:600;position:relative}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:25;background:color-mix(in srgb,var(--surface) 96%,transparent);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs .wrap{display:grid;grid-template-columns:1fr 1fr auto 1fr 1fr;align-items:center;height:var(--nav)}
+.tab{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11.5px;color:var(--muted);font-weight:600;position:relative}
 .tab.on{color:var(--text)}
 .tab svg{width:22px;height:22px}
 .badge{position:absolute;top:-4px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--accent);color:#1a0d07;font-size:11px;font-weight:800;display:grid;place-items:center}
-.fab{width:56px;height:56px;border-radius:50%;background:var(--accent);color:#1a0d07;display:grid;place-items:center;box-shadow:0 8px 24px rgba(255,107,61,.35);margin-top:-22px}
+.fab{width:56px;height:56px;border-radius:50%;background:var(--accent);color:#1a0d07;display:grid;place-items:center;box-shadow:0 8px 24px rgba(255,107,61,.35);margin:-22px 10px 0}
 .fab svg{width:26px;height:26px}
+
+/* Mini player */
+#player{position:fixed;left:0;right:0;bottom:calc(var(--nav) + env(safe-area-inset-bottom));z-index:24;padding:0 8px 6px}
+#player .pb{max-width:744px;margin:0 auto;height:58px;border-radius:14px;background:#2a2433;border:1px solid var(--line);display:flex;align-items:center;gap:8px;padding:0 8px;position:relative;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+#player .prog{position:absolute;left:0;bottom:0;height:3px;background:var(--accent);width:var(--p,0%)}
+#player img{width:42px;height:42px;border-radius:8px;object-fit:cover;flex:none;background:var(--surface2)}
+#player .title{font-size:14px}
+#player .artist{font-size:12px}
+.pbtn{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--text);flex:none}
+.pbtn:hover{background:rgba(255,255,255,.08)}
+.pbtn.main{background:var(--text);color:var(--bg)}
+.pbtn.on{color:var(--good)}
+.pbtn svg{width:17px;height:17px}
+.qpos{font-size:11px;color:var(--muted);font-weight:700;white-space:nowrap}
 
 /* Sheets */
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:40;display:flex;align-items:flex-end;justify-content:center}
 .sheet{width:100%;max-width:640px;max-height:92vh;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:22px 22px 0 0;padding:18px 16px calc(20px + env(safe-area-inset-bottom))}
 @media (min-width:700px){.scrim{align-items:center}.sheet{border-radius:22px}}
 .sheet-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-.sheet-head h2{font-size:22px;flex:1}
+.sheet-head h2{font-size:22px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
-.field label{font-size:13px;color:var(--muted);font-weight:600}
+.field label,.flabel{font-size:13px;color:var(--muted);font-weight:600}
 .input,textarea{width:100%;border-radius:12px;border:1px solid var(--line);background:var(--bg);padding:11px 13px;outline:none}
 .input:focus,textarea:focus{border-color:var(--accent)}
-textarea{min-height:74px;resize:vertical}
+textarea{min-height:70px;resize:vertical}
 .hint{font-size:12px;color:var(--muted);line-height:1.45}
 .results{display:flex;flex-direction:column;gap:6px;margin:6px 0 14px}
 .result{display:flex;gap:10px;align-items:center;padding:8px;border-radius:12px;background:var(--bg);border:1px solid var(--line);text-align:left;width:100%}
 .result img{width:44px;height:44px;border-radius:8px;object-fit:cover;flex:none;background:var(--surface2)}
-.result.sel{border-color:var(--accent)}
 .picked{display:flex;gap:12px;align-items:center;padding:10px;border-radius:14px;background:var(--bg);border:1px solid var(--accent);margin-bottom:14px}
-.picked img{width:60px;height:60px;border-radius:10px;object-fit:cover}
+.picked img{width:56px;height:56px;border-radius:10px;object-fit:cover}
 .people{display:flex;flex-wrap:wrap;gap:8px}
 .person{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 12px 0 4px;border-radius:999px;background:var(--bg);border:1px solid var(--line);font-size:14px}
 .person.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--bg))}
+.tagpick{display:flex;flex-wrap:wrap;gap:6px}
+.tagpick .chip{height:30px;font-size:12.5px}
+.tagpick .custom{height:30px;width:120px;border-radius:999px;border:1px dashed var(--line);background:transparent;padding:0 12px;font-size:12.5px;outline:none}
+.tagpick .custom:focus{border-color:var(--accent2)}
 .check{display:flex;align-items:center;gap:10px;font-size:14px;margin-bottom:14px}
 .check input{width:18px;height:18px;accent-color:var(--accent)}
-.detail-art{width:100%;max-width:280px;aspect-ratio:1;border-radius:18px;object-fit:cover;display:block;margin:0 auto 14px;background:var(--surface2)}
-.who{display:flex;flex-direction:column;gap:6px;margin:8px 0 14px}
-.who div{display:flex;align-items:center;gap:8px;font-size:14px}
-.who span.r{margin-left:auto;color:var(--accent2)}
+.detail-art{width:100%;max-width:260px;aspect-ratio:1;border-radius:18px;object-fit:cover;display:block;margin:0 auto 14px;background:var(--surface2)}
+.links{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:14px}
+.lnk{height:34px;padding:0 12px;border-radius:999px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:7px;text-decoration:none;border:1px solid var(--line);background:var(--surface2)}
+.lnk svg{width:16px;height:16px}
+.whos{display:flex;flex-direction:column;gap:6px;margin:8px 0 10px}
+.whos div{display:flex;align-items:center;gap:8px;font-size:14px}
+.whos span.r{margin-left:auto;color:var(--accent2)}
 .comment{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
 .comment:last-child{border-bottom:0}
 .comment .body{flex:1;min-width:0;font-size:14px;line-height:1.45;word-break:break-word}
@@ -143,7 +203,24 @@ textarea{min-height:74px;resize:vertical}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
 .dot.on{background:var(--good)}
 
-/* Sign-in */
+/* Guide + What's new */
+.hbtn{width:38px;height:38px;border-radius:50%;background:var(--surface2);display:grid;place-items:center;font-size:17px;position:relative}
+.hbtn:hover{background:var(--line)}
+.hbtn .ndot{position:absolute;top:4px;right:4px;width:9px;height:9px;border-radius:50%;background:var(--accent);border:2px solid var(--bg)}
+.guide-intro{color:var(--muted);line-height:1.5;margin:0 0 12px;font-size:14px}
+.guide-step{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.guide-step:last-child{border-bottom:0}
+.guide-step .gi{width:36px;height:36px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;font-size:18px;flex:none}
+.guide-step .gt{font-size:14px;line-height:1.5}
+.guide-step .gt b{color:var(--text)}
+.wn{padding:12px 0;border-bottom:1px solid var(--line)}
+.wn:last-child{border-bottom:0}
+.wn h4{margin:0 0 2px;font-size:15px}
+.wn .v{font-size:11.5px;color:var(--muted);font-weight:700;margin-bottom:6px}
+.wn ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:1.5}
+.wn-older summary{cursor:pointer;color:var(--muted);font-size:13px;font-weight:700;padding:10px 0}
+
+/* Gates */
 .gate{min-height:100vh;display:grid;place-items:center;padding:24px;text-align:center}
 .gate .box{max-width:420px}
 .gate svg.logo{width:96px;height:96px;margin-bottom:12px}
@@ -152,15 +229,16 @@ textarea{min-height:74px;resize:vertical}
 .gbtn{height:48px;padding:0 22px;border-radius:999px;background:var(--text);color:var(--bg);font-weight:700;display:inline-flex;align-items:center;gap:10px}
 
 /* Toast */
-#toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);opacity:0;background:var(--text);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;font-weight:600;z-index:60;transition:.25s;max-width:calc(100% - 32px);text-align:center;pointer-events:none}
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast{position:fixed;left:50%;bottom:calc(var(--nav) + var(--player) + 18px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);opacity:0;background:var(--text);color:var(--bg);padding:10px 14px;border-radius:12px;font-size:14px;font-weight:600;z-index:60;transition:.25s;max-width:calc(100% - 32px);width:max-content;display:flex;align-items:center;gap:14px;pointer-events:none}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+#toast button{color:var(--accent);font-weight:800;text-transform:uppercase;font-size:13px;letter-spacing:.04em;flex:none}
 .spin{width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:sp .7s linear infinite;display:inline-block}
 @keyframes sp{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 
-<svg width="0" height="0" style="position:absolute">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="logo" viewBox="0 0 64 64">
     <rect x="4" y="12" width="56" height="40" rx="7" fill="#ff6b3d"/>
     <rect x="11" y="18" width="42" height="17" rx="4" fill="#1a0d07"/>
@@ -170,18 +248,25 @@ textarea{min-height:74px;resize:vertical}
   </symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z" fill="currentColor"/></symbol>
   <symbol id="i-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z" fill="currentColor"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path d="M5 5v14l10-7zM16 5h3v14h-3z" fill="currentColor"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M4.5 12.5l5 5L19.5 7" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3L3 10.5l7 2.5 2.5 7z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/><path d="M21 3L10 13" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
+  <symbol id="i-sp" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#1ed760"/><path d="M6.5 9.3c3.8-1.1 7.9-.8 11 1M7.2 12.4c3.1-.9 6.4-.6 9 .9M7.8 15.3c2.5-.7 5-.5 7.1.7" stroke="#0b0b0b" stroke-width="1.6" fill="none" stroke-linecap="round"/></symbol>
+  <symbol id="i-am" viewBox="0 0 24 24"><rect x="1" y="1" width="22" height="22" rx="6" fill="#fa2d48"/><path d="M15.5 6v8.2a2.2 2.2 0 1 1-1.4-2V8.4l-5 1.1v6.2a2.2 2.2 0 1 1-1.4-2V8.2z" fill="#fff"/></symbol>
+  <symbol id="i-yt" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ff0033"/><circle cx="12" cy="12" r="5.6" stroke="#fff" stroke-width="1.4" fill="none"/><path d="M10.5 9.6v4.8l4-2.4z" fill="#fff"/></symbol>
 </svg>
 
-<!-- Setup needed -->
 <div id="setupGate" class="gate hidden">
   <div class="box">
     <svg class="logo"><use href="#logo"/></svg>
     <h1>Almost there</h1>
-    <p>Mixtape needs its Firebase settings. Open <b>index.html</b>, find <code>FIREBASE_CONFIG</code> near the bottom, and paste in the config from your Firebase project. The setup guide walks through it.</p>
+    <p>Mixtape needs its Firebase settings. Open <b>index.html</b>, find <code>FIREBASE_CONFIG</code>, and paste in the config from your Firebase project.</p>
   </div>
 </div>
 
-<!-- Sign in -->
 <div id="signinGate" class="gate hidden">
   <div class="box">
     <svg class="logo"><use href="#logo"/></svg>
@@ -194,16 +279,13 @@ textarea{min-height:74px;resize:vertical}
   </div>
 </div>
 
-<!-- App -->
 <div id="app" class="hidden">
   <header>
     <div class="wrap">
       <div class="brand"><svg><use href="#logo"/></svg>Mixtape</div>
       <div class="spacer"></div>
-      <button class="icon-btn" data-action="open-playlist" id="playlistBtn" title="Open group playlist">
-        <svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#1ed760"/><path d="M6.5 9.3c3.8-1.1 7.9-.8 11 1M7.2 12.4c3.1-.9 6.4-.6 9 .9M7.8 15.3c2.5-.7 5-.5 7.1.7" stroke="#0b0b0b" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
-        Playlist
-      </button>
+      <button class="hbtn" data-action="help" title="How to use Mixtape" aria-label="How to use Mixtape">❓</button>
+      <button class="hbtn" data-action="whatsnew" title="What's new" aria-label="What's new">✨<span class="ndot hidden" id="wnDot"></span></button>
       <button class="avatar-btn" data-action="settings" title="Settings"><img class="avatar" id="meAvatar" alt=""></button>
     </div>
   </header>
@@ -211,7 +293,7 @@ textarea{min-height:74px;resize:vertical}
   <main class="wrap">
     <section id="view-feed">
       <div class="toolbar">
-        <input class="search" id="search" type="search" placeholder="Search songs, artists, or who shared…" autocomplete="off">
+        <input class="search" id="search" type="search" placeholder="Search songs, artists, tags, or who shared…" autocomplete="off">
         <div class="chips" id="filters">
           <button class="chip on" data-filter="all">All</button>
           <button class="chip" data-filter="new">New to me</button>
@@ -219,15 +301,25 @@ textarea{min-height:74px;resize:vertical}
           <button class="chip" data-filter="playlist">Playlist</button>
           <button class="chip" data-filter="mine">Shared by me</button>
         </div>
+        <div class="chips hidden" id="tagFilters"></div>
       </div>
+      <div id="feedPlay"></div>
       <div class="list" id="feedList"></div>
+    </section>
+
+    <section id="view-crew" class="hidden">
+      <div class="section-title"><h2>The crew</h2><span id="crewCount"></span></div>
+      <div id="crewBody"></div>
     </section>
 
     <section id="view-inbox" class="hidden">
       <div class="section-title"><h2>Sent to you</h2><span id="inboxCount"></span></div>
+      <div id="inboxPlay"></div>
       <div class="list" id="inboxList"></div>
     </section>
   </main>
+
+  <div id="player" class="hidden"></div>
 
   <nav class="tabs">
     <div class="wrap">
@@ -235,11 +327,19 @@ textarea{min-height:74px;resize:vertical}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
         Feed
       </button>
-      <button class="fab" data-action="add" title="Share a song"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+      <button class="tab" data-tab="crew">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5"/><path d="M16 4.7a3.5 3.5 0 0 1 0 6.6M18 14.8c1.8.8 3 2.6 3.5 5.2"/></svg>
+        Crew
+      </button>
+      <button class="fab" data-action="add" title="Share a song"><svg><use href="#i-plus"/></svg></button>
       <button class="tab" data-tab="inbox">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13L22 12v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z"/></svg>
         Inbox
         <span class="badge hidden" id="inboxBadge"></span>
+      </button>
+      <button class="tab" data-action="open-playlist">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h12M3 11h12M3 16h7"/><path d="M19 8v9"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>
+        Playlist
       </button>
     </div>
   </nav>
@@ -250,7 +350,7 @@ textarea{min-height:74px;resize:vertical}
 
 <script type="module">
 /* =========================================================
-   1) PASTE YOUR FIREBASE CONFIG HERE (see Docs/Setup guide)
+   FIREBASE CONFIG (mixtape-e3fc4)
    ========================================================= */
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyB_cp3i_QRcnXzVH8xVhUsWX4nROHs0Erc",
@@ -269,6 +369,8 @@ import { getFirestore, collection, doc, onSnapshot, addDoc, setDoc, updateDoc, d
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const REACTIONS = ["🔥","❤️","😮","😂","💤"];
+const MOODS = ["chill","hype","gym","road trip","late night","throwback","party","sad hours","focus"];
+const MAX_TAGS = 4;
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const store = {
@@ -276,10 +378,32 @@ const store = {
   set(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
   del(k){ try { localStorage.removeItem(k); } catch {} }
 };
-function toast(msg, ms = 2600){
-  const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+const ico = (id, cls = "") => `<svg class="${cls}"><use href="#i-${id}"/></svg>`;
+
+/* ---------- Toast (with optional Undo) ---------- */
+function toast(msg, ms = 2600, action){
+  const t = $("#toast");
+  t.innerHTML = `<span>${esc(msg)}</span>${action ? `<button>${esc(action.label)}</button>` : ""}`;
+  if (action) t.querySelector("button").onclick = () => { t.classList.remove("show"); action.run(); };
+  t.classList.add("show");
   clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), ms);
 }
+/* Deferred actions: happen after a few seconds unless Undo is tapped. */
+const pending = new Map();
+function withUndo(key, msg, { apply, commit, revert }, ms = 5000){
+  if (pending.has(key)) return;
+  apply && apply();
+  const timer = setTimeout(() => { pending.delete(key); commit(); }, ms);
+  pending.set(key, { timer, commit });
+  toast(msg, ms, { label:"Undo", run: () => {
+    const p = pending.get(key); if (!p) return;
+    clearTimeout(p.timer); pending.delete(key); revert && revert(); toast("Undone");
+  }});
+}
+function flushPending(){ for (const [k,p] of pending) { clearTimeout(p.timer); pending.delete(k); p.commit(); } }
+addEventListener("pagehide", flushPending);
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flushPending(); });
+
 function timeAgo(ms){
   if (!ms) return "just now";
   const s = Math.floor((Date.now() - ms) / 1000);
@@ -289,24 +413,25 @@ function timeAgo(ms){
   const d = Math.floor(h/24); if (d < 7) return d + "d ago";
   return new Date(ms).toLocaleDateString(undefined,{month:"short",day:"numeric"});
 }
-const tsMs = t => t?.toMillis ? t.toMillis() : (typeof t === "number" ? t : 0);
-const initials = n => encodeURIComponent((n||"?").trim().charAt(0).toUpperCase());
-const avatarUrl = (photo, name) => photo || `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" fill="#2f2a38"/><text x="20" y="26" font-family="sans-serif" font-size="18" font-weight="700" fill="#f3eef7" text-anchor="middle">${decodeURIComponent(initials(name))}</text></svg>`)}`;
+const tsMs = t => t?.toMillis ? t.toMillis() : (typeof t === "number" ? t : Date.now());
+const avatarUrl = (photo, name) => photo || `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" fill="#2f2a38"/><text x="20" y="26" font-family="sans-serif" font-size="18" font-weight="700" fill="#f3eef7" text-anchor="middle">${esc((name||"?").trim().charAt(0).toUpperCase())}</text></svg>`)}`;
 
 /* ---------- State ---------- */
-const S = { me:null, songs:[], users:{}, settings:{}, tab:"feed", filter:"all", q:"", openId:null, playingId:null };
+const S = { me:null, songs:[], users:{}, settings:{}, tab:"feed", filter:"all", tag:null, q:"", openId:null,
+  since:0, loaded:false, hidden:new Set(), unpl:new Set(), hiddenComments:new Set(),
+  queue:[], qi:0, playingId:null, paused:true, syncing:false, sharedText:null, reopenSettings:false };
 const audio = new Audio();
-audio.addEventListener("ended", () => { S.playingId = null; render(); });
+audio.preload = "none";
 
-/* ---------- Boot ---------- */
 let db, auth;
 const configured = !Object.values(FIREBASE_CONFIG).some(v => String(v).startsWith("PASTE"));
-// (boot() is started at the very bottom of this script, once everything is defined)
 
+/* ---------- Boot (called at the very bottom, once everything is defined) ---------- */
 function boot(){
   const app = initializeApp(FIREBASE_CONFIG);
   auth = getAuth(app); db = getFirestore(app);
   spHandleCallback();
+  readShareTarget();
 
   $("#signinBtn").onclick = async () => {
     const p = new GoogleAuthProvider();
@@ -321,29 +446,63 @@ function boot(){
   onAuthStateChanged(auth, async user => {
     unsubs.forEach(u => u()); unsubs = [];
     if (!user) { S.me = null; $("#app").classList.add("hidden"); $("#signinGate").classList.remove("hidden"); return; }
-    S.me = { uid:user.uid, name:user.displayName || user.email.split("@")[0], photo:user.photoURL || "" };
+    S.me = { uid:user.uid, name:user.displayName || (user.email||"").split("@")[0], photo:user.photoURL || "" };
     $("#signinGate").classList.add("hidden"); $("#app").classList.remove("hidden");
-    if (S.reopenSettings) setTimeout(() => { S.reopenSettings = false; openSettings(); }, 400);
     $("#meAvatar").src = avatarUrl(S.me.photo, S.me.name);
+    computeSince();
     setDoc(doc(db,"users",user.uid), { name:S.me.name, photo:S.me.photo, lastSeen:serverTimestamp() }, { merge:true }).catch(()=>{});
 
     unsubs.push(onSnapshot(query(collection(db,"songs"), orderBy("createdAt","desc")), snap => {
       S.songs = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+      const first = !S.loaded; S.loaded = true;
       render(); if (S.openId) refreshDetail();
+      if (first) setTimeout(() => spSync(), 1500);
     }, err => toast("Couldn't load songs: " + err.code)));
     unsubs.push(onSnapshot(collection(db,"users"), snap => {
       S.users = {}; snap.forEach(d => S.users[d.id] = d.data()); render();
     }));
     unsubs.push(onSnapshot(doc(db,"settings","group"), d => { S.settings = d.data() || {}; }));
+
+    if (S.reopenSettings) setTimeout(() => { S.reopenSettings = false; openSettings(); }, 400);
+    if (S.sharedText) setTimeout(() => { const t = S.sharedText; S.sharedText = null; openAdd(t); }, 300);
+    $("#wnDot").classList.toggle("hidden", store.get("mx_seen_version") === APP_VERSION);
+    setTimeout(maybeShowIntro, 900);
   });
+
+  setInterval(() => spSync(), 5 * 60 * 1000);
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") spSync(); });
+}
+
+/* New-since-last-visit: a "visit" ends after 30 minutes away */
+function computeSince(){
+  const key = "mx_visit_" + S.me.uid, now = Date.now(), v = store.get(key);
+  if (!v) S.since = 0;
+  else if (now - v.last > 30 * 60 * 1000) S.since = v.last;
+  else S.since = v.since || 0;
+  const save = () => store.set(key, { since:S.since, last:Date.now() });
+  save();
+  clearInterval(computeSince._i); computeSince._i = setInterval(save, 60000);
+  addEventListener("pagehide", save);
+}
+
+/* Android share target: Spotify → Share → Mixtape */
+function readShareTarget(){
+  const p = new URLSearchParams(location.search);
+  if (!p.has("text") && !p.has("url") && !p.has("title")) return;
+  const all = [p.get("url"), p.get("text"), p.get("title")].filter(Boolean).join(" ");
+  S.sharedText = ((all.match(/https?:\/\/\S+/) || [all])[0] || "").trim();
+  history.replaceState(null, "", redirectUri());
 }
 
 /* ---------- Helpers on songs ---------- */
+const live = () => S.songs.filter(s => !S.hidden.has(s.id));
+const ratingsFrom = (s, exclude) => Object.entries(s.ratings||{}).filter(([u]) => u !== exclude).map(([,v]) => v);
 const avgRating = s => { const v = Object.values(s.ratings||{}); return v.length ? v.reduce((a,b)=>a+b,0)/v.length : 0; };
 const heard = (s, uid = S.me?.uid) => !!(s.listened||{})[uid];
 const isInbox = s => (s.sentTo||[]).includes(S.me.uid);
 const senderFor = s => { const sends = (s.sends||[]).filter(x => x.to === S.me.uid); return sends[sends.length-1]; };
 const userName = uid => S.users[uid]?.name || "Someone";
+const plState = s => S.unpl.has(s.id) ? "none" : (s.playlist || "none");
 function links(s){
   const q = encodeURIComponent(`${s.title} ${s.artist}`);
   return {
@@ -352,30 +511,73 @@ function links(s){
     ytm: s.ytmUrl || `https://music.youtube.com/search?q=${q}`
   };
 }
+const songKey = s => `${s.title}|${String(s.artist).split(/,|&| feat\.| x /i)[0]}`.toLowerCase()
+  .replace(/\(.*?\)|\[.*?\]|feat\..*$|- .*remaster.*$/g,"").replace(/[^a-z0-9|]/g,"");
+const unheardPlayable = list => list.filter(s => !heard(s) && s.addedBy?.uid !== S.me.uid && s.previewUrl);
+
+function filteredFeed(){
+  let feed = live();
+  const q = S.q.trim().toLowerCase();
+  if (q) feed = feed.filter(s => `${s.title} ${s.artist} ${s.album} ${s.addedBy?.name} ${s.note} ${(s.tags||[]).join(" ")}`.toLowerCase().includes(q));
+  if (S.tag) feed = feed.filter(s => (s.tags||[]).includes(S.tag));
+  if (S.filter === "new") feed = feed.filter(s => !heard(s) && s.addedBy?.uid !== S.me.uid);
+  if (S.filter === "mine") feed = feed.filter(s => s.addedBy?.uid === S.me.uid);
+  if (S.filter === "playlist") feed = feed.filter(s => ["added","queued"].includes(plState(s)));
+  if (S.filter === "top") feed = feed.filter(s => avgRating(s) > 0).sort((a,b) => avgRating(b) - avgRating(a));
+  return feed;
+}
+const inboxSongs = () => live().filter(isInbox).sort((a,b) => (senderFor(b)?.at||0) - (senderFor(a)?.at||0));
 
 /* ---------- Render ---------- */
 function render(){
   if (!S.me) return;
-  const unheardInbox = S.songs.filter(s => isInbox(s) && !heard(s)).length;
+  const songs = live();
+  const unheardInbox = songs.filter(s => isInbox(s) && !heard(s)).length;
   const b = $("#inboxBadge"); b.textContent = unheardInbox; b.classList.toggle("hidden", !unheardInbox);
 
-  let feed = S.songs.slice();
-  const q = S.q.trim().toLowerCase();
-  if (q) feed = feed.filter(s => `${s.title} ${s.artist} ${s.album} ${s.addedBy?.name} ${s.note}`.toLowerCase().includes(q));
-  if (S.filter === "new") feed = feed.filter(s => !heard(s) && s.addedBy?.uid !== S.me.uid);
-  if (S.filter === "mine") feed = feed.filter(s => s.addedBy?.uid === S.me.uid);
-  if (S.filter === "playlist") feed = feed.filter(s => s.playlist === "added" || s.playlist === "queued");
-  if (S.filter === "top") feed = feed.filter(s => avgRating(s) > 0).sort((a,b) => avgRating(b) - avgRating(a));
+  // tag filter chips
+  const tagCounts = {};
+  songs.forEach(s => (s.tags||[]).forEach(t => tagCounts[t] = (tagCounts[t]||0) + 1));
+  const tags = Object.keys(tagCounts).sort((a,b) => tagCounts[b] - tagCounts[a]);
+  if (S.tag && !tagCounts[S.tag]) S.tag = null;
+  const tf = $("#tagFilters");
+  tf.classList.toggle("hidden", !tags.length);
+  tf.innerHTML = tags.map(t => `<button class="chip mtag ${S.tag===t?"on":""}" data-tagf="${esc(t)}">#${esc(t)} <span style="opacity:.6">${tagCounts[t]}</span></button>`).join("");
 
-  $("#feedList").innerHTML = feed.length ? feed.map(card).join("") : emptyFeed();
+  const feed = filteredFeed();
+  // "new since your last visit" divider (time-ordered views only)
+  let html = "";
+  const showDivider = S.since && S.filter !== "top" && !S.q.trim();
+  let dividerDone = !showDivider;
+  const newCount = showDivider ? feed.filter(s => tsMs(s.createdAt) > S.since && s.addedBy?.uid !== S.me.uid).length : 0;
+  feed.forEach((s, i) => {
+    if (!dividerDone && tsMs(s.createdAt) <= S.since) {
+      dividerDone = true;
+      if (i > 0 && newCount) html += `<div class="divider">↑ ${newCount} new since your last visit</div>`;
+    }
+    html += card(s);
+  });
+  $("#feedList").innerHTML = feed.length ? html : emptyFeed();
 
-  const inbox = S.songs.filter(isInbox).sort((a,b) => (senderFor(b)?.at||0) - (senderFor(a)?.at||0));
+  const up = unheardPlayable(feed);
+  $("#feedPlay").innerHTML = up.length ? playAllBtn("feed", up.length, "Play all new") : "";
+
+  const inbox = inboxSongs();
   $("#inboxCount").textContent = unheardInbox ? `${unheardInbox} new` : "";
+  const ip = unheardPlayable(inbox);
+  $("#inboxPlay").innerHTML = ip.length ? playAllBtn("inbox", ip.length, "Play your inbox") : "";
   $("#inboxList").innerHTML = inbox.length ? inbox.map(s => card(s, true)).join("")
     : `<div class="empty"><h3>Nothing here yet</h3>When a friend sends you a song, it lands here.</div>`;
+
+  if (S.tab === "crew") renderCrew();
+  renderPlayer();
+}
+function playAllBtn(src, n, label){
+  return `<button class="playall" data-action="playall" data-src="${src}"><span class="pi">${ico("play")}</span>
+    <span style="flex:1"><b>${label}</b><span>${n} preview${n>1?"s":""} you haven't heard · 30s each</span></span></button>`;
 }
 function emptyFeed(){
-  if (S.songs.length) return `<div class="empty"><h3>No matches</h3>Try a different filter or search.</div>`;
+  if (live().length) return `<div class="empty"><h3>No matches</h3>Try a different filter, tag or search.</div>`;
   return `<div class="empty"><h3>The tape's blank</h3>Tap <b>+</b> to share the first song with the crew.</div>`;
 }
 
@@ -388,77 +590,302 @@ function card(s, inboxView = false){
   const L = links(s);
   const sender = inboxView ? senderFor(s) : null;
   const unheard = !heard(s) && !mine;
-  const playing = S.playingId === s.id;
+  const isCur = S.playingId === s.id, isPlaying = isCur && !S.paused;
 
-  return `<article class="card ${unheard && (inboxView || isInbox(s)) ? "unheard" : ""}">
+  return `<article class="card ${unheard && isInbox(s) ? "unheard" : ""} ${isCur ? "playing" : ""}">
     <div class="row">
       <div class="art">
         ${s.artwork ? `<img src="${esc(s.artwork)}" alt="" loading="lazy">` : ""}
-        ${s.previewUrl ? `<button class="play" data-action="preview" data-id="${s.id}" title="${playing?"Pause":"Play"} 30s preview"><svg><use href="#i-${playing?"pause":"play"}"/></svg></button>` : ""}
+        ${s.previewUrl ? `<button class="play" data-action="preview" data-id="${s.id}" title="${isPlaying?"Pause":"Play"} 30s preview"><span>${ico(isPlaying?"pause":"play")}</span></button>` : ""}
       </div>
-      <div class="meta" data-action="detail" data-id="${s.id}" style="cursor:pointer">
+      <div class="meta" data-action="detail" data-id="${s.id}">
         <div class="title">${esc(s.title)}</div>
         <div class="artist">${esc(s.artist)}${s.album ? " · " + esc(s.album) : ""}</div>
         <div class="by">
           <img class="avatar sm" src="${esc(avatarUrl(s.addedBy?.photo, s.addedBy?.name))}" alt="">
-          ${sender ? `Sent by <b>${esc(sender.fromName)}</b> · ${timeAgo(sender.at)}` : `${esc(s.addedBy?.name)} · ${timeAgo(tsMs(s.createdAt))}`}
+          <span>${sender ? `Sent by <b>${esc(sender.fromName)}</b> · ${timeAgo(sender.at)}` : `${s.source==="spotify" ? "From the playlist" : esc(s.addedBy?.name)} · ${timeAgo(tsMs(s.createdAt))}`}</span>
           ${unheard && isInbox(s) && !inboxView ? `<span class="tag">For you</span>` : ""}
-          ${s.playlist === "added" ? `<span class="tag soft">In playlist</span>` : ""}
+          ${nRates ? `<span class="tag gold">★ ${avg.toFixed(1)} <span style="color:var(--muted)">(${nRates})</span></span>` : ""}
+          ${heardCount ? `<span title="Listened by ${heardCount}">🎧 ${heardCount}</span>` : ""}
         </div>
+        ${(s.tags||[]).length ? `<div class="moods">${s.tags.map(t => `<span class="mood">#${esc(t)}</span>`).join("")}</div>` : ""}
       </div>
     </div>
     ${s.note ? `<div class="note">${esc(s.note)}</div>` : ""}
-    <div class="links">
-      <a class="svc sp" href="${esc(L.spotify)}" target="_blank" rel="noopener"><i></i>Spotify</a>
-      <a class="svc am" href="${esc(L.apple)}" target="_blank" rel="noopener"><i></i>Apple Music</a>
-      <a class="svc yt" href="${esc(L.ytm)}" target="_blank" rel="noopener"><i></i>YouTube Music</a>
-    </div>
-    <div class="actions">
+    <div class="bar">
       ${REACTIONS.map(r => `<button class="react ${myReact===r?"mine":""}" data-action="react" data-id="${s.id}" data-r="${r}">${r}${counts[r]?`<b>${counts[r]}</b>`:""}</button>`).join("")}
       <span class="stars" title="Your rating">
-        ${[1,2,3,4,5].map(n => `<button class="star ${n<=myRate?"on":""}" data-action="rate" data-id="${s.id}" data-n="${n}" aria-label="${n} star">★</button>`).join("")}
-        ${nRates ? `<span class="avg">${avg.toFixed(1)} (${nRates})</span>` : ""}
+        ${[1,2,3,4,5].map(n => `<button class="star ${n<=myRate?"on":""}" data-action="rate" data-id="${s.id}" data-n="${n}" aria-label="Rate ${n}">★</button>`).join("")}
       </span>
     </div>
-    <div class="btnrow">
-      ${mine ? "" : `<button class="btn ${heard(s)?"ok":""}" data-action="heard" data-id="${s.id}">${heard(s)?"✓ Listened":"Mark listened"}</button>`}
-      <button class="btn" data-action="detail" data-id="${s.id}">💬 ${s.commentCount||0}</button>
-      <button class="btn" data-action="send" data-id="${s.id}">Send to…</button>
-      ${playlistBtn(s)}
-      ${heardCount ? `<span class="hint" style="align-self:center;margin-left:auto">Heard by ${heardCount}</span>` : ""}
+    <div class="bar2">
+      <a class="svc" href="${esc(L.spotify)}" target="_blank" rel="noopener" title="Open in Spotify">${ico("sp")}</a>
+      <a class="svc" href="${esc(L.apple)}" target="_blank" rel="noopener" title="Open in Apple Music">${ico("am")}</a>
+      <a class="svc" href="${esc(L.ytm)}" target="_blank" rel="noopener" title="Open in YouTube Music">${ico("yt")}</a>
+      <span class="spacer"></span>
+      ${mine ? "" : `<button class="ib ${heard(s)?"ok":""}" data-action="heard" data-id="${s.id}" title="${heard(s)?"Listened":"Mark listened"}">${ico("check")}</button>`}
+      <button class="ib" data-action="detail" data-id="${s.id}" title="Comments">${ico("chat")}${s.commentCount ? s.commentCount : ""}</button>
+      <button class="ib" data-action="send" data-id="${s.id}" title="Send to…">${ico("send")}</button>
+      ${playlistChip(s)}
     </div>
   </article>`;
 }
-function playlistBtn(s){
-  if (s.playlist === "added") return `<button class="btn ok" disabled>✓ In playlist</button>`
+function playlistChip(s){
+  const st = plState(s);
+  if (st === "added") return `<button class="ib ok" data-action="detail" data-id="${s.id}" title="In the group playlist">${ico("check")}<span class="lbl">Playlist</span></button>`;
+  if (st === "queued") return spConnected()
+    ? `<button class="ib queued" data-action="playlist" data-id="${s.id}" title="Queued. Tap to add now">${ico("plus")}<span class="lbl">Add now</span></button>`
+    : `<button class="ib queued" data-action="detail" data-id="${s.id}" title="Queued for the playlist"><span class="lbl">Queued</span></button>`;
+  return `<button class="ib add" data-action="playlist" data-id="${s.id}" title="Add to the group playlist">${ico("plus")}<span class="lbl">Playlist</span></button>`;
+}
+function playlistButtons(s){
+  const st = plState(s);
+  if (st === "added") return `<button class="btn ok" disabled>✓ In playlist</button>`
     + (spConnected() ? `<button class="btn danger" data-action="unplaylist" data-id="${s.id}">Remove from playlist</button>` : "");
-  if (s.playlist === "queued") return spConnected()
+  if (st === "queued") return spConnected()
     ? `<button class="btn queued" data-action="playlist" data-id="${s.id}">Queued · add now</button>`
     : `<button class="btn queued" disabled>Queued for playlist</button>`;
   return `<button class="btn" data-action="playlist" data-id="${s.id}">+ Playlist</button>`;
 }
 
+/* ---------- Crew stats ---------- */
+function crewStats(){
+  const songs = live(), out = {};
+  for (const [uid,u] of Object.entries(S.users)) {
+    const shared = songs.filter(s => s.addedBy?.uid === uid && s.source !== "spotify");
+    const recv = shared.flatMap(s => ratingsFrom(s, uid));
+    const fire = shared.reduce((n,s) => n + Object.entries(s.reactions||{}).filter(([r,v]) => r !== uid && v === "🔥").length, 0);
+    const avgOf = x => { const r = ratingsFrom(x, uid); return r.length ? r.reduce((p,c)=>p+c,0)/r.length : 0; };
+    const top = shared.filter(s => ratingsFrom(s, uid).length).sort((a,b) => avgOf(b) - avgOf(a) || ratingsFrom(b,uid).length - ratingsFrom(a,uid).length)[0];
+    out[uid] = {
+      uid, name:u.name, photo:u.photo, shared:shared.length,
+      avg: recv.length ? recv.reduce((a,b)=>a+b,0)/recv.length : 0, nRecv: recv.length,
+      fire, top,
+      inPlaylist: shared.filter(s => plState(s) === "added").length,
+      listened: songs.filter(s => (s.listened||{})[uid]).length,
+      given: songs.filter(s => (s.ratings||{})[uid]).length,
+      match: tasteMatch(uid)
+    };
+  }
+  return out;
+}
+function tasteMatch(uid){
+  if (uid === S.me.uid) return null;
+  const both = live().filter(s => (s.ratings||{})[uid] && (s.ratings||{})[S.me.uid]);
+  if (both.length < 2) return { pct:null, n:both.length };
+  const diff = both.reduce((a,s) => a + Math.abs(s.ratings[uid] - s.ratings[S.me.uid]), 0) / both.length;
+  return { pct: Math.round(100 - diff * 25), n: both.length };
+}
+function renderCrew(){
+  const st = crewStats(), people = Object.values(st);
+  $("#crewCount").textContent = `${people.length} ${people.length === 1 ? "person" : "people"}`;
+  if (!people.length) { $("#crewBody").innerHTML = ""; return; }
+  const best = (key, filt = () => true) => people.filter(p => p[key] > 0 && filt(p)).sort((a,b) => b[key] - a[key])[0];
+  const hl = [
+    ["Most shared", best("shared"), p => `${p.shared} song${p.shared>1?"s":""}`],
+    ["Best taste", best("avg", p => p.nRecv >= 3), p => `★ ${p.avg.toFixed(1)} avg from the crew`],
+    ["Most 🔥", best("fire"), p => `${p.fire} 🔥 on their picks`],
+    ["Top listener", best("listened"), p => `${p.listened} song${p.listened>1?"s":""} listened`]
+  ];
+  const tiles = hl.map(([label, p, fmt]) => `<button class="hl" ${p ? `data-action="person" data-uid="${p.uid}"` : ""}><small>${label}</small>
+    ${p ? `<div class="who"><img class="avatar" src="${esc(avatarUrl(p.photo,p.name))}" alt=""><span>${esc(p.name)}</span></div><em>${fmt(p)}</em>`
+        : `<div class="hint">Not enough activity yet</div>`}</button>`).join("");
+  const list = people.sort((a,b) => (b.uid===S.me.uid) - (a.uid===S.me.uid) || b.shared - a.shared).map(p => `
+    <button class="person-card" data-action="person" data-uid="${p.uid}">
+      <img class="avatar lg" src="${esc(avatarUrl(p.photo,p.name))}" alt="">
+      <div class="meta"><div class="title">${esc(p.name)}${p.uid===S.me.uid ? ` <span class="hint">(you)</span>` : ""}</div>
+        <div class="artist">${p.shared} shared${p.nRecv ? ` · ★ ${p.avg.toFixed(1)}` : ""}${p.fire ? ` · 🔥 ${p.fire}` : ""} · ${p.inPlaylist} in playlist</div></div>
+      ${p.match ? (p.match.pct != null ? `<span class="pill ${p.match.pct >= 75 ? "hot" : ""}">${p.match.pct}% match</span>` : `<span class="pill">match: rate more</span>`) : ""}
+    </button>`).join("");
+  $("#crewBody").innerHTML = `<div class="hl-grid">${tiles}</div><div class="list">${list}</div>`;
+}
+function openPerson(uid){
+  const p = crewStats()[uid]; if (!p) return;
+  const theirs = live().filter(s => s.addedBy?.uid === uid && s.source !== "spotify");
+  const m = p.match;
+  openSheet(`${head(esc(p.name))}
+    <div class="row" style="margin-bottom:14px"><img class="avatar lg" src="${esc(avatarUrl(p.photo,p.name))}" alt="">
+      <div class="meta" style="cursor:default"><div class="title">${esc(p.name)}</div>
+      <div class="hint">${m ? (m.pct != null ? `<b style="color:var(--good)">${m.pct}% taste match</b> with you, from ${m.n} songs you've both rated` : `Rate ${2 - m.n} more song${2-m.n>1?"s":""} you've both rated to see your taste match`) : "This is you"}</div></div></div>
+    <div class="stat-grid">
+      <div class="stat"><b>${p.shared}</b><span>Shared</span></div>
+      <div class="stat"><b>${p.nRecv ? p.avg.toFixed(1) : "–"}</b><span>Avg ★ received</span></div>
+      <div class="stat"><b>${p.fire}</b><span>🔥 received</span></div>
+      <div class="stat"><b>${p.inPlaylist}</b><span>In playlist</span></div>
+      <div class="stat"><b>${p.listened}</b><span>Listened</span></div>
+      <div class="stat"><b>${p.given}</b><span>Ratings given</span></div>
+    </div>
+    ${p.top ? `<div class="flabel" style="margin-bottom:6px">Top pick</div>${miniRow(p.top, uid)}<div style="height:14px"></div>` : ""}
+    <div class="flabel" style="margin-bottom:6px">Shared by ${esc(p.name)} (${theirs.length})</div>
+    <div class="list" style="padding:0">${theirs.length ? theirs.map(s => miniRow(s, uid)).join("") : `<div class="hint">Nothing shared yet.</div>`}</div>`);
+}
+function miniRow(s, ownerUid){
+  const r = ratingsFrom(s, ownerUid), a = r.length ? (r.reduce((x,y)=>x+y,0)/r.length).toFixed(1) : null;
+  return `<button class="mini" data-action="detail" data-id="${s.id}"><img src="${esc(s.artwork)}" alt="">
+    <div class="meta"><div class="title" style="font-size:14px">${esc(s.title)}</div><div class="artist">${esc(s.artist)}</div></div>
+    ${a ? `<span class="r">★ ${a}</span>` : ""}</button>`;
+}
+
+/* ---------- What's new ----------
+   Bump APP_VERSION and prepend an entry whenever you ship something.
+   It pops up once per version (only what's new since that person last looked),
+   and the ✨ button reopens the full list any time. */
+const APP_VERSION = "2026.10.09c";
+const WHATS_NEW = [
+  { v:"2026.10.09c", title:"Big update: player, crew stats, tags & playlist sync", items:[
+    "▶️ <b>Mini player + Play all new</b>: previews keep playing in a bar above the menu. Tap <b>Play all new</b> at the top of the feed (or your Inbox) to run through every song you haven't heard, radio-style. Mark it listened right from the player.",
+    "🏷️ <b>Mood tags</b>: tag songs #chill, #gym, #road trip and more (or make your own) when you share, or add them later from a song's page. Filter the feed by tag.",
+    "👥 <b>Crew tab</b>: who shares the most, whose picks rate best, who gets the most 🔥, and your <b>taste match %</b> with each friend. Tap anyone to see their stats and everything they've shared.",
+    "🔄 <b>Two-way playlist sync</b>: Mixtape now checks the Spotify playlist. Songs removed in Spotify stop showing \"In playlist\", and songs added straight in Spotify show up in the feed. <i>Already connected to Spotify? Open Settings and tap <b>Reconnect</b> once to turn this on.</i>",
+    "📍 <b>New since your last visit</b>: a line in the feed shows where you left off.",
+    "↩️ <b>Undo</b>: deleting a song or comment, or removing from the playlist, now happens right away with an Undo button instead of a pop-up.",
+    "📲 <b>Share from Spotify (Android)</b>: once Mixtape is on your home screen, it shows up in Spotify's Share menu.",
+    "🎨 <b>Slimmer cards</b>: more songs fit on screen, with the Spotify / Apple Music / YouTube buttons on one row.",
+  ]},
+  { v:"2026.10.09b", title:"Remove songs from the playlist", items:[
+    "➖ <b>Remove from playlist</b>: open a song that's in the playlist and tap <b>Remove from playlist</b> (anyone connected to Spotify). The song stays in Mixtape.",
+    "🗑️ Deleting a song you shared also takes it off the Spotify playlist when you're connected.",
+  ]},
+  { v:"2026.10.09a", title:"Spotify connect fixed", items:[
+    "🔧 <b>Fixed:</b> tapping <b>Connect Spotify</b> sometimes just reloaded the page without connecting. Settings now also tells you exactly what Spotify said if something goes wrong.",
+  ]},
+  { v:"2026.10.08", title:"Mixtape launches 🎧", items:[
+    "🎵 Share songs by search or by pasting a link, with Spotify, Apple Music and YouTube Music buttons on every song.",
+    "🔥 React, rate, comment, mark listened, and send songs straight to a friend's Inbox.",
+    "📀 Build the group Spotify playlist together.",
+  ]},
+];
+const wnBlock = e => `<div class="wn"><h4>${e.title}</h4><div class="v">${e.v}</div><ul>${e.items.map(i => `<li>${i}</li>`).join("")}</ul></div>`;
+function openWhatsNew(list, showOlder = true){
+  const entries = list || WHATS_NEW, RECENT = 3;
+  let body = entries.slice(0, RECENT).map(wnBlock).join("");
+  const older = entries.slice(RECENT);
+  if (showOlder && older.length) body += `<details class="wn-older"><summary>Show ${older.length} older update${older.length>1?"s":""}</summary>${older.map(wnBlock).join("")}</details>`;
+  openSheet(`${head("✨ What's new")}${body || `<div class="hint">You're all caught up.</div>`}
+    <button class="btn primary" data-close style="width:100%;height:44px;justify-content:center;margin-top:12px">Got it 🎉</button>`);
+  store.set("mx_seen_version", APP_VERSION); $("#wnDot")?.classList.add("hidden");
+}
+function whatsNewSince(seen){
+  const i = WHATS_NEW.findIndex(e => e.v === seen);
+  return i > 0 ? WHATS_NEW.slice(0, i) : i === 0 ? [] : WHATS_NEW.slice(0, 2);
+}
+
+/* ---------- How to use ---------- */
+function openHelp(){
+  store.set("mx_guide_seen", 1);
+  const step = (i, t) => `<div class="guide-step"><div class="gi">${i}</div><div class="gt">${t}</div></div>`;
+  openSheet(`${head("👋 How to use Mixtape")}
+    <p class="guide-intro">Mixtape is the crew's spot to swap songs, react to them, and build one shared playlist. Here's the quick tour:</p>
+    ${step("➕", "<b>Share a song.</b> Tap the orange <b>+</b>, then search by song or artist, or paste a Spotify, Apple Music or YouTube link. Add a note on why they need to hear it, plus mood tags if you like.")}
+    ${step("🎧", "<b>Listen on your app.</b> Every song has Spotify, Apple Music and YouTube Music buttons, so it doesn't matter what you use. Tap the artwork for a 30-second preview.")}
+    ${step("▶️", "<b>Play all new.</b> The button at the top of the feed plays previews of everything you haven't heard, one after another. The player bar above the menu has pause, next, and a ✓ to mark the song listened.")}
+    ${step("🔥", "<b>React and rate.</b> Tap a reaction and give it 1–5 stars. Tap ✓ once you've listened so the crew knows (and it leaves your <b>New to me</b> list).")}
+    ${step("📬", "<b>Send to a friend.</b> The paper-plane button sends a song straight to someone's <b>Inbox</b>. The Inbox tab shows a badge until they listen.")}
+    ${step("💬", "<b>Talk about it.</b> Tap a song's name to open its page: comments, who rated it what, its mood tags, and more.")}
+    ${step("📀", "<b>The group playlist.</b> Tap <b>+ Playlist</b> on a song to put it in the shared Spotify playlist. Connected to Spotify? It goes in right away. Not on Spotify? It's queued, and anyone connected can add it. The <b>Playlist</b> tab opens it in Spotify.")}
+    ${step("🔄", "<b>Spotify sync.</b> Connect Spotify in Settings (tap your picture) to add and remove songs yourself. Mixtape also keeps up with changes made in Spotify, and songs added there show up in the feed.")}
+    ${step("🏷️", "<b>Find things fast.</b> Search the feed, or use the filters (<b>New to me</b>, <b>Top rated</b>, <b>Playlist</b>, <b>Shared by me</b>) and the #tag chips under them.")}
+    ${step("👥", "<b>The Crew tab.</b> See who shares the most, whose picks rate best, and your taste match % with each friend. Tap a person to see their stats and everything they've shared.")}
+    ${step("↩️", "<b>Oops? Undo.</b> Deleting a song or comment, or removing one from the playlist, shows an <b>Undo</b> button for a few seconds.")}
+    ${step("📲", "<b>Make it an app.</b> Add Mixtape to your home screen from your browser menu. On Android, Mixtape then shows up in Spotify's <b>Share</b> menu.")}
+    <p class="hint" style="margin-top:12px">Reopen this any time with the ❓ button. See recent changes with ✨.</p>
+    <button class="btn primary" data-close style="width:100%;height:44px;justify-content:center;margin-top:8px">Let's go 🎧</button>`);
+}
+/* First visit: show the guide. Returning after an update: show what's new. */
+function maybeShowIntro(){
+  if (document.querySelector(".scrim")) return; // don't stack on another sheet
+  const seen = store.get("mx_seen_version");
+  if (!store.get("mx_guide_seen")) { store.set("mx_seen_version", APP_VERSION); return openHelp(); }
+  if (seen === APP_VERSION) return;
+  const since = whatsNewSince(seen);
+  if (!since.length) { store.set("mx_seen_version", APP_VERSION); return; }
+  openWhatsNew(since, false);
+}
+
+/* ---------- Mini player ---------- */
+function playQueue(list, startId){
+  S.queue = list.map(s => s.id);
+  S.qi = Math.max(0, startId ? S.queue.indexOf(startId) : 0);
+  playCurrent();
+}
+function playCurrent(){
+  const s = S.songs.find(x => x.id === S.queue[S.qi]);
+  if (!s) return stopPlayer();
+  S.playingId = s.id; S.paused = false;
+  audio.src = s.previewUrl;
+  audio.play().catch(() => { S.paused = true; toast("Preview couldn't play"); render(); });
+  if ("mediaSession" in navigator && window.MediaMetadata) {
+    navigator.mediaSession.metadata = new MediaMetadata({ title:s.title, artist:s.artist, album:"Mixtape", artwork: s.artwork ? [{ src:s.artwork, sizes:"600x600", type:"image/jpeg" }] : [] });
+  }
+  render();
+}
+function togglePause(){
+  if (!S.playingId) return;
+  if (audio.paused) { audio.play().catch(()=>{}); S.paused = false; } else { audio.pause(); S.paused = true; }
+  render();
+}
+function nextTrack(){ if (S.qi < S.queue.length - 1) { S.qi++; playCurrent(); } else stopPlayer(); }
+function stopPlayer(){ audio.pause(); audio.removeAttribute("src"); S.playingId = null; S.paused = true; S.queue = []; render(); }
+audio.addEventListener("ended", () => { if (S.qi < S.queue.length - 1) nextTrack(); else { S.paused = true; render(); } });
+audio.addEventListener("timeupdate", () => {
+  const pb = $("#player .pb"); if (pb && audio.duration) pb.style.setProperty("--p", (audio.currentTime / audio.duration * 100) + "%");
+});
+if ("mediaSession" in navigator) {
+  try {
+    navigator.mediaSession.setActionHandler("play", togglePause);
+    navigator.mediaSession.setActionHandler("pause", togglePause);
+    navigator.mediaSession.setActionHandler("nexttrack", nextTrack);
+  } catch {}
+}
+function renderPlayer(){
+  const el = $("#player"), s = S.songs.find(x => x.id === S.playingId);
+  document.body.classList.toggle("has-player", !!s);
+  if (!s) { el.classList.add("hidden"); el.innerHTML = ""; return; }
+  el.classList.remove("hidden");
+  const mine = s.addedBy?.uid === S.me.uid;
+  el.innerHTML = `<div class="pb">
+    <img src="${esc(s.artwork)}" alt="">
+    <div class="meta" data-action="detail" data-id="${s.id}"><div class="title">${esc(s.title)}</div>
+      <div class="artist">${esc(s.artist)}${S.queue.length > 1 ? ` · <span class="qpos">${S.qi+1}/${S.queue.length}</span>` : ""}</div></div>
+    ${mine ? "" : `<button class="pbtn ${heard(s)?"on":""}" data-action="heard" data-id="${s.id}" title="${heard(s)?"Listened":"Mark listened"}">${ico("check")}</button>`}
+    <button class="pbtn main" data-action="pp" title="${S.paused?"Play":"Pause"}">${ico(S.paused?"play":"pause")}</button>
+    ${S.qi < S.queue.length - 1 ? `<button class="pbtn" data-action="next" title="Next">${ico("next")}</button>` : ""}
+    <button class="pbtn" data-action="stop" title="Close">${ico("x")}</button>
+    <div class="prog"></div></div>`;
+  if (audio.duration) el.querySelector(".pb").style.setProperty("--p", (audio.currentTime / audio.duration * 100) + "%");
+}
+
 /* ---------- Events ---------- */
 document.addEventListener("click", async e => {
-  const t = e.target.closest("[data-action],[data-tab],[data-filter]");
+  const t = e.target.closest("[data-action],[data-tab],[data-filter],[data-tagf]");
   if (!t) return;
-  if (t.dataset.tab) { S.tab = t.dataset.tab;
-    document.querySelectorAll(".tab").forEach(x => x.classList.toggle("on", x === t));
-    $("#view-feed").classList.toggle("hidden", S.tab !== "feed");
-    $("#view-inbox").classList.toggle("hidden", S.tab !== "inbox");
-    window.scrollTo({top:0}); return; }
+  if (t.dataset.tab) return switchTab(t.dataset.tab);
   if (t.dataset.filter) { S.filter = t.dataset.filter;
-    document.querySelectorAll(".chip").forEach(x => x.classList.toggle("on", x === t)); render(); return; }
+    document.querySelectorAll("#filters .chip").forEach(x => x.classList.toggle("on", x === t)); render(); return; }
+  if (t.dataset.tagf) { S.tag = S.tag === t.dataset.tagf ? null : t.dataset.tagf; render(); return; }
 
   const id = t.dataset.id, s = S.songs.find(x => x.id === id);
   switch (t.dataset.action) {
     case "add": return openAdd();
     case "settings": return openSettings();
+    case "help": return openHelp();
+    case "whatsnew": return openWhatsNew();
+    case "person": return openPerson(t.dataset.uid);
     case "open-playlist":
       if (S.settings.playlistUrl) window.open(S.settings.playlistUrl, "_blank", "noopener");
       else { toast("No group playlist yet. Add one in Settings."); openSettings(); }
       return;
-    case "preview": return togglePreview(s);
+    case "preview":
+      if (S.playingId === id) { togglePause(); return refreshDetail(); }
+      playQueue([s]); return refreshDetail();
+    case "playall": {
+      const up = unheardPlayable(t.dataset.src === "inbox" ? inboxSongs() : filteredFeed());
+      if (!up.length) return toast("Nothing new with a preview");
+      return playQueue(up);
+    }
+    case "pp": return togglePause();
+    case "next": return nextTrack();
+    case "stop": return stopPlayer();
     case "detail": return openDetail(id);
     case "send": return openSend(s);
     case "react": {
@@ -471,22 +898,21 @@ document.addEventListener("click", async e => {
     }
     case "heard": return update(id, { [`listened.${S.me.uid}`]: heard(s) ? deleteField() : true });
     case "playlist": return playlistAction([s], t);
-    case "unplaylist":
-      if (!confirm(`Take "${s.title}" off the group Spotify playlist? It stays in Mixtape.`)) return;
-      return playlistRemove(s, t);
+    case "unplaylist": return unplaylistWithUndo(s);
   }
 });
+function switchTab(tab){
+  S.tab = tab;
+  document.querySelectorAll(".tab[data-tab]").forEach(x => x.classList.toggle("on", x.dataset.tab === tab));
+  for (const v of ["feed","crew","inbox"]) $("#view-" + v).classList.toggle("hidden", v !== tab);
+  if (tab === "crew") renderCrew();
+  window.scrollTo({ top:0 });
+}
 $("#search").addEventListener("input", e => { S.q = e.target.value; render(); });
 
 async function update(id, data){
-  try { await updateDoc(doc(db,"songs",id), data); }
-  catch (e) { toast("Couldn't save: " + (e.code || e.message)); }
-}
-
-function togglePreview(s){
-  if (S.playingId === s.id) { audio.pause(); S.playingId = null; }
-  else { audio.src = s.previewUrl; audio.play().catch(()=>toast("Preview couldn't play")); S.playingId = s.id; }
-  render();
+  try { await updateDoc(doc(db,"songs",id), data); return true; }
+  catch (e) { toast("Couldn't save: " + (e.code || e.message)); return false; }
 }
 
 /* ---------- Sheets ---------- */
@@ -505,7 +931,7 @@ function closeSheet(){
   const cb = closeSheet._cb; closeSheet._cb = null; cb && cb();
 }
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeSheet(); });
-const head = title => `<div class="sheet-head"><h2>${title}</h2><button class="icon-btn" data-close>✕</button></div>`;
+const head = title => `<div class="sheet-head"><h2>${title}</h2><button class="icon-btn" data-close aria-label="Close">${ico("x","i")}</button></div>`;
 
 function peoplePicker(selected = []){
   const others = Object.entries(S.users).filter(([uid]) => uid !== S.me.uid);
@@ -517,9 +943,41 @@ function bindPicker(root){
   root.querySelectorAll(".person").forEach(p => p.onclick = () => p.classList.toggle("on"));
   return () => [...root.querySelectorAll(".person.on")].map(p => p.dataset.uid);
 }
+/* Mood tag picker: presets + tags the crew already uses + your own */
+function tagPicker(root, initial = []){
+  let sel = [...initial];
+  const used = new Set(live().flatMap(s => s.tags||[]));
+  const clean = v => v.trim().toLowerCase().replace(/^#/, "").replace(/\s+/g, " ").slice(0, 20);
+  const draw = () => {
+    const pool = [...new Set([...MOODS, ...used, ...sel])];
+    root.innerHTML = `<div class="tagpick">${pool.map(t => `<button type="button" class="chip mtag ${sel.includes(t)?"on":""}" data-t="${esc(t)}">#${esc(t)}</button>`).join("")}
+      <input class="custom" maxlength="20" placeholder="+ your own"></div>`;
+    root.querySelectorAll("[data-t]").forEach(b => b.onclick = () => {
+      const t = b.dataset.t;
+      if (sel.includes(t)) sel = sel.filter(x => x !== t);
+      else if (sel.length >= MAX_TAGS) return toast(`Up to ${MAX_TAGS} tags`);
+      else sel.push(t);
+      draw();
+    });
+    const inp = root.querySelector(".custom");
+    inp.onkeydown = e => {
+      if (e.key !== "Enter") return; e.preventDefault();
+      const t = clean(inp.value); if (!t) return;
+      if (!sel.includes(t) && sel.length >= MAX_TAGS) return toast(`Up to ${MAX_TAGS} tags`);
+      if (!sel.includes(t)) sel.push(t);
+      used.add(t); draw(); root.querySelector(".custom").focus();
+    };
+  };
+  draw();
+  return () => {
+    const extra = clean(root.querySelector(".custom")?.value || "");
+    if (extra && !sel.includes(extra) && sel.length < MAX_TAGS) sel.push(extra);
+    return sel;
+  };
+}
 
 /* ---------- Add song ---------- */
-function openAdd(){
+function openAdd(prefill = ""){
   let picked = null, timer = null, seq = 0;
   const el = openSheet(`${head("Share a song")}
     <div class="field">
@@ -532,43 +990,48 @@ function openAdd(){
       <div id="dupWarn"></div>
       <div class="field"><label>Why should they listen? (optional)</label>
         <textarea id="addNote" maxlength="500" placeholder="The bridge at 2:40 though…"></textarea></div>
+      <div class="field"><label>Mood tags (optional, up to ${MAX_TAGS})</label><div id="addTags"></div></div>
       <div class="field"><label>Send it to someone (optional)</label><div id="addPeople">${peoplePicker()}</div></div>
-      <label class="check"><input type="checkbox" id="addPl"> Suggest it for the group playlist</label>
+      <label class="check"><input type="checkbox" id="addPl"> Add it to the group playlist</label>
       <button class="btn primary" id="addSave" style="width:100%;height:46px;justify-content:center">Share song</button>
     </div>`);
   const qEl = el.querySelector("#addQ"), res = el.querySelector("#addResults");
   const getPeople = bindPicker(el.querySelector("#addPeople"));
+  const getTags = tagPicker(el.querySelector("#addTags"));
   setTimeout(() => qEl.focus(), 50);
 
   qEl.addEventListener("input", () => {
     clearTimeout(timer);
     const q = qEl.value.trim();
     if (!q) { res.innerHTML = ""; return; }
+    const isUrl = /^https?:\/\//i.test(q);
     timer = setTimeout(async () => {
       const my = ++seq;
       res.innerHTML = `<div class="hint"><span class="spin"></span> Looking it up…</div>`;
       try {
-        const items = /^https?:\/\//i.test(q) ? await lookupLink(q) : await itunesSearch(q);
+        const items = isUrl ? await lookupLink(q) : await itunesSearch(q);
         if (my !== seq) return;
+        if (isUrl && items.length === 1) return pick(items[0]);
         res.innerHTML = items.length ? items.map((it,i) => `<button class="result" data-i="${i}">
             <img src="${esc(it.artwork)}" alt=""><div class="meta"><div class="title">${esc(it.title)}</div>
             <div class="artist">${esc(it.artist)}${it.album?" · "+esc(it.album):""}</div></div></button>`).join("")
-          : `<div class="hint">No songs found. Try the artist name too.</div>`;
+          : `<div class="hint">${isUrl ? "Couldn't find a song at that link. Try searching by name instead." : "No songs found. Try the artist name too."}</div>`;
         res.querySelectorAll(".result").forEach(b => b.onclick = () => pick(items[+b.dataset.i]));
       } catch (e) { if (my === seq) res.innerHTML = `<div class="hint">Lookup failed. Check your connection and try again.</div>`; }
-    }, /^https?:\/\//i.test(q) ? 50 : 350);
+    }, isUrl ? 50 : 350);
   });
+  if (prefill) { qEl.value = prefill; qEl.dispatchEvent(new Event("input")); }
 
   function pick(it){
     picked = it;
     res.innerHTML = "";
     el.querySelector("#addForm").classList.remove("hidden");
     el.querySelector("#addPicked").innerHTML = `<div class="picked"><img src="${esc(it.artwork)}" alt="">
-      <div class="meta"><div class="title">${esc(it.title)}</div><div class="artist">${esc(it.artist)}</div></div>
+      <div class="meta" style="cursor:default"><div class="title">${esc(it.title)}</div><div class="artist">${esc(it.artist)}</div></div>
       <button class="icon-btn" id="unpick">Change</button></div>`;
-    el.querySelector("#unpick").onclick = () => { picked = null; el.querySelector("#addForm").classList.add("hidden"); qEl.focus(); qEl.dispatchEvent(new Event("input")); };
-    const key = songKey(it), dup = S.songs.find(s => songKey(s) === key);
-    el.querySelector("#dupWarn").innerHTML = dup ? `<div class="note" style="margin-bottom:14px">${esc(dup.addedBy?.name)} already shared this one. You can still send it to someone from its card.</div>` : "";
+    el.querySelector("#unpick").onclick = () => { picked = null; el.querySelector("#addForm").classList.add("hidden"); qEl.focus(); if (!/^https?:/i.test(qEl.value)) qEl.dispatchEvent(new Event("input")); };
+    const dup = live().find(s => songKey(s) === songKey(it) || (it.spotifyId && s.spotifyId === it.spotifyId));
+    el.querySelector("#dupWarn").innerHTML = dup ? `<div class="note" style="margin-bottom:14px">${esc(dup.source==="spotify" ? "This one's already in Mixtape from the Spotify playlist" : dup.addedBy?.name + " already shared this one")}. You can still send it to someone from its card.</div>` : "";
   }
 
   el.querySelector("#addSave").onclick = async e => {
@@ -580,11 +1043,12 @@ function openAdd(){
       const data = {
         ...full,
         note: el.querySelector("#addNote").value.trim(),
+        tags: getTags(),
         addedBy: { uid:S.me.uid, name:S.me.name, photo:S.me.photo },
         createdAt: serverTimestamp(),
         reactions:{}, ratings:{}, listened:{}, commentCount:0,
         sentTo: to, sends: to.map(uid => ({ to:uid, from:S.me.uid, fromName:S.me.name, at:now })),
-        playlist: el.querySelector("#addPl").checked ? "queued" : "none"
+        playlist: el.querySelector("#addPl").checked ? "queued" : "none", playlistAt: now
       };
       const ref = await addDoc(collection(db,"songs"), data);
       closeSheet();
@@ -593,7 +1057,6 @@ function openAdd(){
     } catch (err) { toast("Couldn't share: " + (err.code || err.message)); btn.disabled = false; btn.textContent = "Share song"; }
   };
 }
-const songKey = s => `${s.title}|${s.artist}`.toLowerCase().replace(/\(.*?\)|\[.*?\]|feat\..*$/g,"").replace(/[^a-z0-9|]/g,"");
 
 /* ---------- Lookups ---------- */
 function jsonp(url, ms = 8000){
@@ -624,9 +1087,8 @@ async function odesli(url){
 }
 function fromOdesli(d){
   const lp = d.linksByPlatform || {};
-  const spId = (lp.spotify?.entityUniqueId || "").split("::")[1] || "";
   return {
-    spotifyUrl: lp.spotify?.url || "", spotifyId: spId,
+    spotifyUrl: lp.spotify?.url || "", spotifyId: (lp.spotify?.entityUniqueId || "").split("::")[1] || "",
     appleUrl: lp.appleMusic?.url || "", ytmUrl: lp.youtubeMusic?.url || "",
     songLink: d.pageUrl || ""
   };
@@ -636,7 +1098,7 @@ async function lookupLink(url){
   const ent = d.entitiesByUniqueId?.[d.entityUniqueId];
   if (!ent) return [];
   let base = { title:ent.title, artist:ent.artistName, album:"", artwork:ent.thumbnailUrl||"", previewUrl:"", year:"", genre:"" };
-  try { // borrow preview + bigger art from iTunes
+  try {
     const m = (await itunesSearch(`${ent.title} ${ent.artistName}`, 1))[0];
     if (m && songKey(m) === songKey(base)) base = { ...base, album:m.album, artwork:m.artwork||base.artwork, previewUrl:m.previewUrl, year:m.year, genre:m.genre };
   } catch {}
@@ -654,7 +1116,7 @@ async function enrich(it){
 /* ---------- Send to ---------- */
 function openSend(s){
   const el = openSheet(`${head("Send to…")}
-    <div class="picked"><img src="${esc(s.artwork)}" alt=""><div class="meta"><div class="title">${esc(s.title)}</div><div class="artist">${esc(s.artist)}</div></div></div>
+    <div class="picked"><img src="${esc(s.artwork)}" alt=""><div class="meta" style="cursor:default"><div class="title">${esc(s.title)}</div><div class="artist">${esc(s.artist)}</div></div></div>
     <div class="field"><label>Who should hear this?</label><div id="sendPeople">${peoplePicker()}</div></div>
     <button class="btn primary" id="sendGo" style="width:100%;height:46px;justify-content:center">Send</button>`);
   const get = bindPicker(el.querySelector("#sendPeople"));
@@ -662,58 +1124,66 @@ function openSend(s){
     const to = get(); if (!to.length) return toast("Pick at least one person");
     const now = Date.now();
     await update(s.id, { sentTo: arrayUnion(...to), sends: arrayUnion(...to.map(uid => ({ to:uid, from:S.me.uid, fromName:S.me.name, at:now }))) });
-    // re-sending makes it "new" again for them
     await update(s.id, Object.fromEntries(to.map(uid => [`listened.${uid}`, deleteField()])));
     closeSheet(); toast("Sent to " + to.map(userName).join(", "));
   };
 }
 
 /* ---------- Detail + comments ---------- */
-let commentUnsub = null, comments = [];
+let commentUnsub = null, comments = [], editingTags = false;
 function openDetail(id){
-  S.openId = id; comments = [];
-  openSheet(`<div id="detailBody"></div>`, () => { S.openId = null; commentUnsub && commentUnsub(); commentUnsub = null; });
+  S.openId = id; comments = []; editingTags = false;
+  openSheet(`<div id="detailBody"></div>`, () => { S.openId = null; editingTags = false; commentUnsub && commentUnsub(); commentUnsub = null; });
   commentUnsub = onSnapshot(query(collection(db,"songs",id,"comments"), orderBy("createdAt","asc")), snap => {
     comments = snap.docs.map(d => ({ id:d.id, ...d.data() })); refreshDetail();
   });
   refreshDetail();
 }
 function refreshDetail(){
-  const box = $("#detailBody"); if (!box) return;
-  const s = S.songs.find(x => x.id === S.openId);
+  const box = $("#detailBody"); if (!box || editingTags) return;
+  const s = live().find(x => x.id === S.openId);
   if (!s) { closeSheet(); return; }
   const draft = box.querySelector("#cText")?.value || "";
   const L = links(s), mine = s.addedBy?.uid === S.me.uid;
-  const rated = Object.entries(s.ratings||{}), reacted = Object.entries(s.reactions||{}), heardBy = Object.keys(s.listened||{});
   const sends = s.sends || [];
+  const shown = comments.filter(c => !S.hiddenComments.has(c.id));
+  const active = Object.keys(S.users).filter(uid => (s.ratings||{})[uid] || (s.reactions||{})[uid] || (s.listened||{})[uid]);
+  const playingThis = S.playingId === s.id && !S.paused;
   box.innerHTML = `${head(esc(s.title))}
     ${s.artwork ? `<img class="detail-art" src="${esc(s.artwork)}" alt="">` : ""}
-    <div style="text-align:center;margin-bottom:14px"><div class="artist" style="font-size:16px">${esc(s.artist)}</div>
+    <div style="text-align:center;margin-bottom:12px"><div class="artist" style="font-size:16px">${esc(s.artist)}</div>
       <div class="hint">${[s.album, s.year, s.genre].filter(Boolean).map(esc).join(" · ")}</div></div>
-    <div class="links" style="justify-content:center;margin-bottom:14px">
-      <a class="svc sp" href="${esc(L.spotify)}" target="_blank" rel="noopener"><i></i>Spotify</a>
-      <a class="svc am" href="${esc(L.apple)}" target="_blank" rel="noopener"><i></i>Apple Music</a>
-      <a class="svc yt" href="${esc(L.ytm)}" target="_blank" rel="noopener"><i></i>YouTube Music</a>
-      ${s.songLink ? `<a class="svc" href="${esc(s.songLink)}" target="_blank" rel="noopener">All services</a>` : ""}
+    ${s.previewUrl ? `<div class="btnrow" style="justify-content:center;margin-bottom:12px">
+      <button class="btn primary" data-action="preview" data-id="${s.id}">${ico(playingThis ? "pause" : "play","i")} ${playingThis ? "Pause" : "Play preview"}</button></div>` : ""}
+    <div class="links">
+      <a class="lnk" href="${esc(L.spotify)}" target="_blank" rel="noopener">${ico("sp")}Spotify</a>
+      <a class="lnk" href="${esc(L.apple)}" target="_blank" rel="noopener">${ico("am")}Apple Music</a>
+      <a class="lnk" href="${esc(L.ytm)}" target="_blank" rel="noopener">${ico("yt")}YouTube Music</a>
+      ${s.songLink ? `<a class="lnk" href="${esc(s.songLink)}" target="_blank" rel="noopener">All services</a>` : ""}
     </div>
-    <div class="by" style="justify-content:center;margin-bottom:10px"><img class="avatar sm" src="${esc(avatarUrl(s.addedBy?.photo,s.addedBy?.name))}" alt=""> Shared by ${esc(s.addedBy?.name)} · ${timeAgo(tsMs(s.createdAt))}</div>
+    <div class="by" style="justify-content:center;margin-bottom:10px"><img class="avatar sm" src="${esc(avatarUrl(s.addedBy?.photo,s.addedBy?.name))}" alt="">
+      ${s.source === "spotify" ? `Added straight to the Spotify playlist · synced by ${esc(s.addedBy?.name)}` : `Shared by ${esc(s.addedBy?.name)}`} · ${timeAgo(tsMs(s.createdAt))}</div>
     ${s.note ? `<div class="note" style="margin-bottom:14px">${esc(s.note)}</div>` : ""}
-    ${rated.length || reacted.length || heardBy.length || sends.length ? `<div class="panel"><h3>The crew's take</h3><div class="who">
-      ${Object.keys(S.users).filter(uid => (s.ratings||{})[uid] || (s.reactions||{})[uid] || (s.listened||{})[uid]).map(uid => `<div>
+    <div class="panel"><div class="row" style="justify-content:space-between;margin-bottom:${(s.tags||[]).length?8:0}px"><h3 style="margin:0">Mood tags</h3>
+      <button class="icon-btn" id="editTags" style="height:30px;font-size:13px">${(s.tags||[]).length ? "Edit" : "+ Add"}</button></div>
+      <div id="tagArea">${(s.tags||[]).length ? `<div class="moods">${s.tags.map(t => `<span class="mood">#${esc(t)}</span>`).join("")}</div>` : ""}</div>
+    </div>
+    ${active.length || sends.length ? `<div class="panel"><h3>The crew's take</h3><div class="whos">
+      ${active.map(uid => `<div>
         <img class="avatar sm" src="${esc(avatarUrl(S.users[uid].photo, S.users[uid].name))}" alt="">${esc(S.users[uid].name)}
         ${(s.reactions||{})[uid] || ""} ${(s.listened||{})[uid] ? `<span class="hint">listened</span>` : ""}
         <span class="r">${"★".repeat((s.ratings||{})[uid]||0)}</span></div>`).join("")}
       </div>${sends.length ? `<div class="hint">${sends.map(x => `${esc(x.fromName)} → ${esc(userName(x.to))}`).join(" · ")}</div>` : ""}</div>` : ""}
     <div class="panel"><h3>Comments</h3>
-      ${comments.length ? comments.map(c => `<div class="comment"><img class="avatar" src="${esc(avatarUrl(c.photo,c.name))}" alt="">
+      ${shown.length ? shown.map(c => `<div class="comment"><img class="avatar" src="${esc(avatarUrl(c.photo,c.name))}" alt="">
         <div class="body"><b>${esc(c.name)}</b><span class="time">${timeAgo(tsMs(c.createdAt))}</span>
         ${c.uid === S.me.uid ? `<button class="hint" data-del-c="${c.id}" style="float:right">Delete</button>` : ""}<div>${esc(c.text)}</div></div></div>`).join("")
         : `<div class="hint">No comments yet. Start it off.</div>`}
       <form class="comment-form" id="cForm"><input class="input" id="cText" maxlength="500" placeholder="Say something…" autocomplete="off"><button class="btn primary">Post</button></form>
     </div>
     <div class="btnrow">
-      <button class="btn" data-action="send" data-id="${s.id}">Send to…</button>
-      ${playlistBtn(s)}
+      <button class="btn" data-action="send" data-id="${s.id}">${ico("send","i")} Send to…</button>
+      ${playlistButtons(s)}
       ${mine ? `<button class="btn danger" id="delSong" style="margin-left:auto">Delete</button>` : ""}
     </div>`;
   const ct = box.querySelector("#cText"); ct.value = draft;
@@ -725,33 +1195,61 @@ function refreshDetail(){
       update(s.id, { commentCount: increment(1) });
     } catch (err) { ct.value = text; toast("Couldn't post: " + err.code); }
   };
-  box.querySelectorAll("[data-del-c]").forEach(b => b.onclick = async () => {
-    try { await deleteDoc(doc(db,"songs",s.id,"comments",b.dataset.delC)); update(s.id, { commentCount: increment(-1) }); }
-    catch (err) { toast("Couldn't delete: " + err.code); }
+  box.querySelectorAll("[data-del-c]").forEach(b => b.onclick = () => {
+    const cid = b.dataset.delC;
+    withUndo("c:" + cid, "Comment deleted", {
+      apply: () => { S.hiddenComments.add(cid); refreshDetail(); },
+      revert: () => { S.hiddenComments.delete(cid); refreshDetail(); },
+      commit: async () => {
+        try { await deleteDoc(doc(db,"songs",s.id,"comments",cid)); update(s.id, { commentCount: increment(-1) }); }
+        catch (err) { S.hiddenComments.delete(cid); refreshDetail(); toast("Couldn't delete: " + err.code); }
+      }
+    });
   });
-  const del = box.querySelector("#delSong");
-  if (del) del.onclick = async () => {
-    const inPl = s.playlist === "added";
-    const msg = `Delete "${s.title}" from Mixtape? Comments go with it.`
-      + (inPl ? (spConnected() ? "\n\nIt will also be taken off the Spotify playlist."
-                               : "\n\nYou're not connected to Spotify, so it will stay in the Spotify playlist. Connect Spotify in Settings first if you want it removed there too.") : "");
-    if (!confirm(msg)) return;
-    if (inPl && spConnected()) {
-      const ok = await playlistRemove(s, del, true);
-      if (!ok && !confirm("Couldn't take it off the Spotify playlist. Delete it from Mixtape anyway?")) return;
-    }
-    try { await deleteDoc(doc(db,"songs",s.id)); closeSheet(); toast(inPl && spConnected() ? "Deleted and removed from the playlist" : "Deleted"); }
-    catch (err) { toast("Couldn't delete: " + err.code); }
+  box.querySelector("#editTags").onclick = () => {
+    editingTags = true;
+    const area = box.querySelector("#tagArea");
+    area.innerHTML = `<div id="tp"></div><div class="btnrow" style="margin-top:10px"><button class="btn primary" id="tSave">Save tags</button><button class="btn" id="tCancel">Cancel</button></div>`;
+    const get = tagPicker(area.querySelector("#tp"), s.tags || []);
+    box.querySelector("#editTags").classList.add("hidden");
+    area.querySelector("#tSave").onclick = async () => { const tags = get(); editingTags = false; await update(s.id, { tags }); refreshDetail(); };
+    area.querySelector("#tCancel").onclick = () => { editingTags = false; refreshDetail(); };
   };
+  const del = box.querySelector("#delSong");
+  if (del) del.onclick = () => deleteWithUndo(s);
+}
+
+/* ---------- Delete / remove with Undo ---------- */
+function deleteWithUndo(s){
+  const inPl = plState(s) === "added", conn = spConnected();
+  closeSheet();
+  if (S.playingId === s.id) stopPlayer();
+  withUndo("d:" + s.id, inPl ? (conn ? "Deleted · also leaving the playlist" : "Deleted · still in the Spotify playlist (connect Spotify to remove it)") : "Song deleted", {
+    apply: () => { S.hidden.add(s.id); render(); },
+    revert: () => { S.hidden.delete(s.id); render(); },
+    commit: async () => {
+      if (inPl && conn) await playlistRemove(s, null, true);
+      try { await deleteDoc(doc(db,"songs",s.id)); }
+      catch (err) { S.hidden.delete(s.id); render(); toast("Couldn't delete: " + err.code); }
+    }
+  }, inPl && !conn ? 7000 : 5000);
+}
+function unplaylistWithUndo(s){
+  withUndo("u:" + s.id, "Removed from the playlist", {
+    apply: () => { S.unpl.add(s.id); render(); refreshDetail(); },
+    revert: () => { S.unpl.delete(s.id); render(); refreshDetail(); },
+    commit: async () => { await playlistRemove(s, null, true); S.unpl.delete(s.id); render(); refreshDetail(); }
+  });
 }
 
 /* ---------- Settings ---------- */
 function openSettings(){
   const st = S.settings, redirect = redirectUri();
-  const queued = S.songs.filter(s => s.playlist === "queued");
+  const queued = live().filter(s => plState(s) === "queued");
+  const lastSync = store.get("mx_sync_at");
   const el = openSheet(`${head("Settings")}
     <div class="panel"><div class="row"><img class="avatar" src="${esc(avatarUrl(S.me.photo,S.me.name))}" alt="">
-      <div class="meta"><div class="title">${esc(S.me.name)}</div><div class="hint">${Object.keys(S.users).length} people in the crew</div></div>
+      <div class="meta" style="cursor:default"><div class="title">${esc(S.me.name)}</div><div class="hint">${Object.keys(S.users).length} in the crew</div></div>
       <button class="btn" id="signOut">Sign out</button></div></div>
 
     <div class="panel"><h3>Group playlist</h3>
@@ -763,11 +1261,15 @@ function openSettings(){
 
     <div class="panel"><h3>Spotify on this device</h3>
       <div class="status" style="margin-bottom:10px"><span class="dot ${spConnected()?"on":""}"></span>${spConnected()?"Connected: + Playlist adds songs instantly":"Not connected: + Playlist queues songs instead"}</div>
+      ${spNeedsReconnect() ? `<div class="note" style="margin-bottom:10px;border:1px solid var(--accent2)">Playlist sync needs one extra Spotify permission. Tap <b>Reconnect</b> once to turn it on.</div>` : ""}
+      ${spLast() && !spNeedsReconnect() ? `<div class="note" style="margin-bottom:10px;${spLast().ok?"":"border:1px solid var(--bad)"}">${esc(spLast().msg)}</div>` : ""}
       <div class="btnrow" style="margin-bottom:10px">
-        ${spConnected() ? `<button class="btn" id="spOff">Disconnect</button>` : `<button class="btn primary" id="spOn">Connect Spotify</button>`}
+        ${!spConnected() ? `<button class="btn primary" id="spOn">Connect Spotify</button>`
+          : spNeedsReconnect() ? `<button class="btn primary" id="spOn">Reconnect</button><button class="btn" id="spOff">Disconnect</button>`
+          : `<button class="btn" id="spSyncNow">Sync with playlist</button><button class="btn" id="spOff">Disconnect</button>`}
         ${queued.length && spConnected() ? `<button class="btn queued" id="spFlush">Add ${queued.length} queued song${queued.length>1?"s":""}</button>` : ""}
       </div>
-      ${spLast() ? `<div class="note" style="margin-bottom:10px;${spLast().ok?"":"border:1px solid var(--bad)"}">${esc(spLast().msg)}</div>` : ""}
+      ${spConnected() && !spNeedsReconnect() ? `<div class="hint">Mixtape checks the playlist every few minutes: songs removed in Spotify stop showing "In playlist", and songs added straight in Spotify show up here.${lastSync ? ` Last checked ${timeAgo(lastSync)}.` : ""}</div>` : ""}
       ${queued.length && !spConnected() ? `<div class="hint">${queued.length} song${queued.length>1?"s are":" is"} waiting to go in. Anyone connected to Spotify can add ${queued.length>1?"them":"it"}.</div>` : ""}
       <details id="spDetails" style="margin-top:10px" ${st.spotifyClientId ? "" : "open"}><summary class="hint" style="cursor:pointer">Spotify app settings (one-time setup)</summary>
         <div class="field" style="margin-top:10px"><label>Spotify Client ID</label>
@@ -777,9 +1279,13 @@ function openSettings(){
         <div class="btnrow"><button class="btn" id="copyRedir">Copy redirect URI</button><button class="btn primary" id="spCidSave">Save Client ID</button></div>
         <div class="hint" style="margin-top:8px">Spotify's personal-app rules: max 5 connected people, the app owner needs Premium, and each person must be added under User Management in the Spotify dashboard.</div>
       </details>
+    </div>
+
+    <div class="panel"><h3>Install</h3>
+      <div class="hint">Add Mixtape to your home screen (browser menu → <b>Add to Home screen</b> / <b>Install app</b>). On Android it then shows up in Spotify's <b>Share</b> menu, so you can send a song to Mixtape in one tap.</div>
     </div>`);
 
-  el.querySelector("#signOut").onclick = () => { closeSheet(); signOut(auth); };
+  el.querySelector("#signOut").onclick = () => { closeSheet(); stopPlayer(); signOut(auth); };
   el.querySelector("#plSave").onclick = async () => {
     const url = el.querySelector("#plUrl").value.trim();
     if (url && !playlistId(url)) return toast("That doesn't look like a Spotify playlist link");
@@ -796,8 +1302,12 @@ function openSettings(){
     }
     spConnect();
   });
-  el.querySelector("#spOff")?.addEventListener("click", () => { store.del("mx_sp_tok"); toast("Disconnected"); openSettings(); render(); });
+  el.querySelector("#spOff")?.addEventListener("click", () => { store.del("mx_sp_tok"); store.del("mx_sp_last"); toast("Disconnected"); openSettings(); render(); });
   el.querySelector("#spFlush")?.addEventListener("click", async e => { await playlistAction(queued, e.currentTarget); openSettings(); });
+  el.querySelector("#spSyncNow")?.addEventListener("click", async e => {
+    const b = e.currentTarget; b.disabled = true; b.innerHTML = `<span class="spin"></span> Syncing…`;
+    await spSync(true); if ($("#spDetails")) openSettings();
+  });
 }
 async function saveSettings(data){
   try { await setDoc(doc(db,"settings","group"), data, { merge:true }); }
@@ -808,14 +1318,16 @@ const playlistId = url => (String(url).match(/playlist[/:]([A-Za-z0-9]{10,})/) |
 /* =========================================================
    Spotify (Authorization Code + PKCE, all in the browser)
    ========================================================= */
-const SP_SCOPES = "playlist-modify-public playlist-modify-private";
+const SP_SCOPES = "playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private";
 const redirectUri = () => location.origin + location.pathname.replace(/index\.html$/, "");
 const spConnected = () => !!store.get("mx_sp_tok")?.refresh;
+// Connections made before playlist sync existed lack the read permission
+const spNeedsReconnect = () => spConnected() && !/playlist-read/.test(store.get("mx_sp_tok")?.scope || "");
 const spLast = () => store.get("mx_sp_last");
 function spSetLast(ok, msg){
   store.set("mx_sp_last", { ok, msg, at: Date.now() });
   if (!ok) console.warn("[Mixtape] Spotify:", msg);
-  if ($("#spDetails")) openSettings(); // refresh the open Settings panel
+  if ($("#spDetails")) openSettings();
 }
 const SP_ERRORS = {
   access_denied: "You (or Spotify) declined the connection. If you didn't tap Cancel, make sure your Spotify email is added under User Management in the Spotify developer dashboard.",
@@ -826,7 +1338,6 @@ const b64url = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(
 
 async function spConnect(){
   const cid = S.settings.spotifyClientId;
-  if (!cid) return toast("Add the Spotify Client ID first (under Spotify app settings)");
   const verifier = b64url(crypto.getRandomValues(new Uint8Array(48)));
   const challenge = b64url(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier)));
   const state = b64url(crypto.getRandomValues(new Uint8Array(12)));
@@ -850,12 +1361,13 @@ async function spHandleCallback(){
       body: new URLSearchParams({ grant_type:"authorization_code", code:p.get("code"), redirect_uri:redirectUri(), client_id:pk.cid, code_verifier:pk.verifier }) });
     const d = await r.json();
     if (!r.ok) throw new Error(d.error_description || d.error);
-    store.set("mx_sp_tok", { access:d.access_token, refresh:d.refresh_token, exp:Date.now() + d.expires_in*1000, cid:pk.cid });
+    store.set("mx_sp_tok", { access:d.access_token, refresh:d.refresh_token, exp:Date.now() + d.expires_in*1000, cid:pk.cid, scope:d.scope || SP_SCOPES });
     spSetLast(true, "Spotify connected 🎧 + Playlist now adds songs instantly on this device.");
     toast("Spotify connected 🎧"); render();
+    setTimeout(() => spSync(true), 2000);
   } catch (e) {
     const m = String(e.message || e);
-    spSetLast(false, "Spotify said no: " + m + (/redirect/i.test(m) ? ` — the Redirect URI in the Spotify dashboard must be exactly ${redirectUri()}` : ""));
+    spSetLast(false, "Spotify said no: " + m + (/redirect/i.test(m) ? ` (the Redirect URI in the Spotify dashboard must be exactly ${redirectUri()})` : ""));
   }
 }
 async function spToken(force = false){
@@ -865,8 +1377,8 @@ async function spToken(force = false){
     headers:{ "Content-Type":"application/x-www-form-urlencoded" },
     body: new URLSearchParams({ grant_type:"refresh_token", refresh_token:t.refresh, client_id:t.cid }) });
   const d = await r.json().catch(() => ({}));
-  if (!r.ok) { store.del("mx_sp_tok"); render(); throw new Error("Spotify login expired. Reconnect in Settings."); }
-  store.set("mx_sp_tok", { ...t, access:d.access_token, refresh:d.refresh_token || t.refresh, exp:Date.now() + d.expires_in*1000 });
+  if (!r.ok) { store.del("mx_sp_tok"); spSetLast(false, "Your Spotify connection expired. Tap Connect Spotify to reconnect."); render(); throw new Error("Spotify login expired. Reconnect in Settings."); }
+  store.set("mx_sp_tok", { ...t, access:d.access_token, refresh:d.refresh_token || t.refresh, exp:Date.now() + d.expires_in*1000, scope:d.scope || t.scope });
   return d.access_token;
 }
 async function spFetch(path, opts = {}, retry = true){
@@ -878,14 +1390,14 @@ async function spFetch(path, opts = {}, retry = true){
     const msg = r.status === 403 ? "Spotify blocked it. Make sure the playlist is collaborative and you're on the app's user list."
       : r.status === 429 ? "Spotify's rate limit hit. Try again in a minute."
       : (d.error?.message || "Spotify error " + r.status);
-    throw new Error(msg);
+    const err = new Error(msg); err.status = r.status; throw err;
   }
   return r.status === 204 ? null : r.json().catch(() => null);
 }
 async function spFindId(s){
   if (s.spotifyId) return s.spotifyId;
   const clean = x => String(x).replace(/\(.*?\)|\[.*?\]|"/g, "").trim();
-  const d = await spFetch(`/search?type=track&limit=1&q=${encodeURIComponent(`track:${clean(s.title)} artist:${clean(s.artist)}`)}`);
+  const d = await spFetch(`/search?type=track&limit=1&q=${encodeURIComponent(`track:${clean(s.title)} artist:${clean(String(s.artist).split(",")[0])}`)}`);
   const id = d?.tracks?.items?.[0]?.id;
   if (id) update(s.id, { spotifyId:id, spotifyUrl: s.spotifyUrl || `https://open.spotify.com/track/${id}` });
   return id;
@@ -896,9 +1408,8 @@ async function playlistRemove(s, btn, quiet = false){
   try {
     const id = await spFindId(s);
     if (!id) throw new Error(`Couldn't find "${s.title}" on Spotify`);
-    // Removes every copy of this track from the playlist
     await spFetch(`/playlists/${S.settings.playlistId}/items`, { method:"DELETE", body: JSON.stringify({ items: [{ uri: "spotify:track:" + id }] }) });
-    await update(s.id, { playlist:"none", playlistBy:S.me.uid });
+    await update(s.id, { playlist:"none", playlistBy:S.me.uid, playlistAt:Date.now() });
     if (!quiet) toast("Removed from the playlist");
     return true;
   } catch (e) { toast(e.message, 5000); return false; }
@@ -907,21 +1418,82 @@ async function playlistRemove(s, btn, quiet = false){
 async function playlistAction(songs, btn){
   if (!spConnected() || !S.settings.playlistId) {
     const fresh = songs.filter(s => s.playlist !== "queued");
-    await Promise.all(fresh.map(s => update(s.id, { playlist:"queued", playlistBy:S.me.uid })));
+    await Promise.all(fresh.map(s => update(s.id, { playlist:"queued", playlistBy:S.me.uid, playlistAt:Date.now() })));
     if (!S.settings.playlistId) return toast("Queued. Add a group playlist in Settings to send it over.");
     return toast(fresh.length ? "Queued for the playlist. Someone connected to Spotify can add it." : "Already queued");
   }
-  const label = btn?.innerHTML; if (btn) { btn.disabled = true; btn.innerHTML = `<span class="spin"></span> Adding…`; }
+  const label = btn?.innerHTML; if (btn) { btn.disabled = true; btn.innerHTML = `<span class="spin"></span>`; }
   try {
     const found = [], missing = [];
     for (const s of songs) { const id = await spFindId(s); id ? found.push({ s, id }) : missing.push(s); }
     for (let i = 0; i < found.length; i += 100) {
       await spFetch(`/playlists/${S.settings.playlistId}/items`, { method:"POST", body: JSON.stringify({ uris: found.slice(i, i+100).map(x => "spotify:track:" + x.id) }) });
     }
-    await Promise.all(found.map(x => update(x.s.id, { playlist:"added", playlistBy:S.me.uid })));
+    await Promise.all(found.map(x => update(x.s.id, { playlist:"added", playlistBy:S.me.uid, playlistAt:Date.now() })));
     toast(missing.length ? `Added ${found.length}. Couldn't find "${missing[0].title}" on Spotify.` : `Added to the playlist 🎉`, 4000);
   } catch (e) { toast(e.message, 5000); }
   finally { if (btn && document.body.contains(btn)) { btn.disabled = false; btn.innerHTML = label; } }
+}
+
+/* Two-way sync: read the Spotify playlist and line Mixtape up with it */
+async function spSync(manual = false){
+  if (!S.me || !S.loaded || !spConnected() || spNeedsReconnect() || !S.settings.playlistId || S.syncing) return;
+  if (!manual && Date.now() - (store.get("mx_sync_at") || 0) < 2 * 60 * 1000) return;
+  S.syncing = true;
+  try {
+    const tracks = [];
+    let path = `/playlists/${S.settings.playlistId}/items?limit=50`;
+    for (let guard = 0; path && guard < 40; guard++) {
+      const d = await spFetch(path);
+      for (const x of d?.items || []) {
+        const t = x.item || x.track;
+        if (t && t.id && (t.type || "track") === "track") tracks.push(t);
+      }
+      path = d?.next ? d.next.replace("https://api.spotify.com/v1", "") : null;
+    }
+    store.set("mx_sync_at", Date.now());
+    const keyOf = t => songKey({ title:t.name, artist:t.artists?.[0]?.name || "" });
+    const ids = new Set(tracks.map(t => t.id)), keys = new Set(tracks.map(keyOf));
+    const songs = live(), recent = s => Date.now() - (s.playlistAt || 0) < 90 * 1000;
+    let unmarked = 0, marked = 0, imported = 0;
+    for (const s of songs) {
+      if (recent(s) || S.unpl.has(s.id)) continue;
+      const inSp = (s.spotifyId && ids.has(s.spotifyId)) || keys.has(songKey(s));
+      if (s.playlist === "added" && !inSp) { if (await update(s.id, { playlist:"none", playlistAt:Date.now() })) unmarked++; }
+      else if (s.playlist !== "added" && inSp) { if (await update(s.id, { playlist:"added", playlistAt:Date.now() })) marked++; }
+    }
+    const knownIds = new Set(songs.map(s => s.spotifyId).filter(Boolean)), knownKeys = new Set(songs.map(songKey));
+    const fresh = tracks.filter(t => !knownIds.has(t.id) && !knownKeys.has(keyOf(t)));
+    for (const t of fresh.slice(0, 25)) {
+      const base = {
+        title:t.name, artist:(t.artists||[]).map(a => a.name).join(", "), album:t.album?.name || "",
+        artwork:t.album?.images?.[0]?.url || "", year:(t.album?.release_date || "").slice(0,4), genre:"",
+        previewUrl:"", appleUrl:"", ytmUrl:"", songLink:"",
+        spotifyId:t.id, spotifyUrl:t.external_urls?.spotify || `https://open.spotify.com/track/${t.id}`
+      };
+      try { // borrow a 30s preview from iTunes when the names match
+        const m = (await itunesSearch(`${t.name} ${t.artists?.[0]?.name || ""}`, 1))[0];
+        if (m && songKey(m) === keyOf(t)) Object.assign(base, { previewUrl:m.previewUrl, appleUrl:m.appleUrl, genre:m.genre, artwork: base.artwork || m.artwork });
+      } catch {}
+      try {
+        await setDoc(doc(db,"songs","sp_" + t.id), {
+          ...base, note:"", tags:[], source:"spotify",
+          addedBy:{ uid:S.me.uid, name:S.me.name, photo:S.me.photo },
+          createdAt: serverTimestamp(), reactions:{}, ratings:{}, listened:{}, commentCount:0,
+          sentTo:[], sends:[], playlist:"added", playlistAt:Date.now()
+        });
+        imported++;
+      } catch {}
+    }
+    const bits = [];
+    if (imported) bits.push(`${imported} new from Spotify`);
+    if (marked) bits.push(`${marked} marked in playlist`);
+    if (unmarked) bits.push(`${unmarked} no longer in playlist`);
+    if (bits.length) toast("Playlist synced: " + bits.join(", "), 4000);
+    else if (manual) toast("Playlist is in sync ✓");
+  } catch (e) {
+    if (manual) toast("Sync failed: " + e.message, 5000);
+  } finally { S.syncing = false; }
 }
 
 /* ---------- Start ---------- */

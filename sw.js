@@ -1,5 +1,5 @@
 // Mixtape service worker: keeps the app shell available offline.
-const CACHE = "mixtape-v1";
+const CACHE = "mixtape-v2";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png"];
 
 self.addEventListener("install", e => {

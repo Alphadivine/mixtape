@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-10 — Player, crew stats, mood tags, playlist sync, guide & What's New
+- Mini player bar above the menu (pause, next, mark listened, lock-screen controls) and "Play all new" / "Play your inbox" to run through unheard previews
+- Mood tags: preset + custom tags (up to 4) when sharing or from a song's page; tag filter chips in the feed
+- Crew tab: highlights (most shared, best taste, most 🔥, top listener), per-person stats, taste match %, and each person's shares
+- Two-way Spotify playlist sync every few minutes plus "Sync with playlist" in Settings: unmarks songs removed in Spotify, marks songs that are in it, and imports songs added straight in Spotify (needs a one-time Reconnect for the new read permission)
+- "New since your last visit" divider in the feed
+- Undo instead of confirm pop-ups for deleting songs/comments and removing from the playlist
+- Android share target: Mixtape appears in Spotify's Share menu once installed
+- Slimmer song cards: service icons, listened, comments, send and playlist on one row; rating average moved to the byline
+- New ❓ How to use guide (opens once for new users) and ✨ What's New (pops up once per update with what changed since your last visit)
+- Firestore rules: anyone can now edit tags and playlistAt (republish rules)
+
 ## 2026-10 — Remove songs from the playlist
 - New "Remove from playlist" button on songs that are in the group Spotify playlist; anyone connected to Spotify can use it, and the song stays in Mixtape
 - Deleting a song you shared now also takes it off the Spotify playlist when you're connected (and warns you if you're not, since it would stay there)
