@@ -6,7 +6,7 @@ A small, private place for a group of friends to share songs with each other, re
 
 - **Share a song**: search by name/artist, or paste a Spotify, Apple Music or YouTube link. Artwork, album, year and a 30-second preview are filled in automatically. On Android, once installed, Mixtape also shows up in Spotify's **Share** menu.
 - **Works with any service**: every song has Spotify, Apple Music and YouTube Music buttons, so friends on different apps can all listen.
-- **Mini player**: previews keep playing in a bar above the menu. **Play all new** (feed) and **Play your inbox** run through everything you haven't heard.
+- **Mini player**: previews keep playing in a bar above the menu. **Play all new** (feed) and **Play your inbox** run through everything you haven't heard. A volume slider and mute live in the player and on each song's page.
 - **Notes & mood tags**: add a "why you should listen" note and tags like #chill or #gym (or your own); filter the feed by tag.
 - **Reactions & ratings**: 🔥 ❤️ 😮 😂 💤 reactions plus your own 1–5 star rating; cards show the group average.
 - **Mark listened**: track what you've heard; "New to me" shows only what you haven't, and a divider marks what's new since your last visit.
@@ -44,4 +44,4 @@ See `Docs/Setup guide.md` in the app bundle.
 Spotify sign-in tokens stay on each person's device (browser storage) and are never written to Firestore.
 
 ---
-Last updated: 2026-10-09
+Last updated: 2026-10-11

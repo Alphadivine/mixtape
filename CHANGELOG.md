@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10 — Preview volume control
+- Speaker button in the mini player opens a volume slider with mute and a % readout
+- Volume slider under "Play preview" on each song's page, kept in sync with the player
+- Volume and mute are remembered per device; ↑ / ↓ arrow keys nudge it while a preview plays
+- iPhone/iPad (which only allow the hardware buttons) get a mute button and a hint instead of a slider
+- How to use guide and What's New updated
+
 ## 2026-10 — Player, crew stats, mood tags, playlist sync, guide & What's New
 - Mini player bar above the menu (pause, next, mark listened, lock-screen controls) and "Play all new" / "Play your inbox" to run through unheard previews
 - Mood tags: preset + custom tags (up to 4) when sharing or from a song's page; tag filter chips in the feed

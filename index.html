@@ -22,6 +22,7 @@
 html,body{margin:0;background:var(--bg);color:var(--text);font-family:"DM Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 body{min-height:100vh;padding-bottom:calc(var(--nav) + var(--player) + 20px + env(safe-area-inset-bottom))}
 body.has-player{--player:64px}
+body.has-player.vol-open{--player:118px}
 button,input,textarea{font:inherit;color:inherit}
 button{cursor:pointer;border:0;background:none;padding:0}
 a{color:inherit}
@@ -155,6 +156,16 @@ nav.tabs .wrap{display:grid;grid-template-columns:1fr 1fr auto 1fr 1fr;align-ite
 .pbtn.on{color:var(--good)}
 .pbtn svg{width:17px;height:17px}
 .qpos{font-size:11px;color:var(--muted);font-weight:700;white-space:nowrap}
+.volpop{max-width:744px;margin:0 auto 6px;display:flex;align-items:center;gap:10px;background:#2a2433;border:1px solid var(--line);border-radius:14px;padding:8px 12px;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.volpop .pct{font-size:12px;font-weight:700;color:var(--muted);width:38px;text-align:right}
+.volrow{display:flex;align-items:center;gap:10px;justify-content:center;margin:0 auto 12px;max-width:300px}
+.vbtn{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--surface2);color:var(--text);flex:none}
+.vbtn:hover{background:var(--line)}
+.vbtn svg{width:17px;height:17px}
+input.vol{-webkit-appearance:none;appearance:none;flex:1;height:6px;border-radius:999px;background:linear-gradient(90deg,var(--accent) var(--v,80%),var(--line) var(--v,80%));outline:none;cursor:pointer;margin:0}
+input.vol::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--text);border:0;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+input.vol::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--text);border:0}
+input.vol:focus-visible::-webkit-slider-thumb{outline:2px solid var(--accent2);outline-offset:2px}
 
 /* Sheets */
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:40;display:flex;align-items:flex-end;justify-content:center}
@@ -253,6 +264,9 @@ textarea{min-height:70px;resize:vertical}
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M4.5 12.5l5 5L19.5 7" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/></symbol>
   <symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3L3 10.5l7 2.5 2.5 7z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/><path d="M21 3L10 13" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-vol" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></symbol>
+  <symbol id="i-vollow" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M15.5 9a4 4 0 0 1 0 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></symbol>
+  <symbol id="i-mute" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M16 9.5l5 5M21 9.5l-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
   <symbol id="i-sp" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#1ed760"/><path d="M6.5 9.3c3.8-1.1 7.9-.8 11 1M7.2 12.4c3.1-.9 6.4-.6 9 .9M7.8 15.3c2.5-.7 5-.5 7.1.7" stroke="#0b0b0b" stroke-width="1.6" fill="none" stroke-linecap="round"/></symbol>
   <symbol id="i-am" viewBox="0 0 24 24"><rect x="1" y="1" width="22" height="22" rx="6" fill="#fa2d48"/><path d="M15.5 6v8.2a2.2 2.2 0 1 1-1.4-2V8.4l-5 1.1v6.2a2.2 2.2 0 1 1-1.4-2V8.2z" fill="#fff"/></symbol>
@@ -422,6 +436,50 @@ const S = { me:null, songs:[], users:{}, settings:{}, tab:"feed", filter:"all", 
   queue:[], qi:0, playingId:null, paused:true, syncing:false, sharedText:null, reopenSettings:false };
 const audio = new Audio();
 audio.preload = "none";
+
+/* ---------- Volume (remembered on this device) ---------- */
+const VOL = { level: 0.8, muted: false, open: false, canSet: true };
+(() => {
+  const v = store.get("mx_volume");
+  if (v && typeof v.level === "number") { VOL.level = Math.min(1, Math.max(0, v.level)); VOL.muted = !!v.muted; }
+  // iPhone/iPad ignore web volume (only the hardware buttons change it); mute still works there.
+  const probe = new Audio(); probe.volume = 0.5; VOL.canSet = Math.abs(probe.volume - 0.5) < 0.01;
+  applyVolume();
+})();
+function applyVolume(){ audio.volume = VOL.canSet ? VOL.level : 1; audio.muted = VOL.muted || (VOL.canSet && VOL.level === 0); }
+function saveVolume(){ store.set("mx_volume", { level: VOL.level, muted: VOL.muted }); }
+const volIcon = () => (VOL.muted || VOL.level === 0) ? "mute" : VOL.level < 0.5 ? "vollow" : "vol";
+const volPct = () => (VOL.muted ? 0 : Math.round(VOL.level * 100));
+function volSlider(){
+  return `<input type="range" class="vol" min="0" max="100" step="1" value="${volPct()}" style="--v:${volPct()}%" aria-label="Preview volume">`;
+}
+function setVolume(pct){
+  VOL.level = Math.min(100, Math.max(0, pct)) / 100;
+  VOL.muted = VOL.level === 0;
+  applyVolume(); saveVolume(); syncVolumeUI();
+}
+function toggleMute(){
+  if (VOL.muted || VOL.level === 0) { VOL.muted = false; if (VOL.level === 0) VOL.level = 0.5; }
+  else VOL.muted = true;
+  applyVolume(); saveVolume(); syncVolumeUI();
+}
+/* Update every volume control in place (no re-render, so dragging stays smooth). */
+function syncVolumeUI(){
+  document.querySelectorAll("input.vol").forEach(r => { if (document.activeElement !== r) r.value = volPct(); r.style.setProperty("--v", volPct() + "%"); });
+  document.querySelectorAll("[data-action=mute] use, [data-action=volume] use").forEach(u => u.setAttribute("href", "#i-" + volIcon()));
+  document.querySelectorAll(".volpop .pct").forEach(p => p.textContent = volPct() + "%");
+  document.querySelectorAll("[data-action=mute]").forEach(b => b.title = (VOL.muted || VOL.level === 0) ? "Unmute" : "Mute");
+}
+document.addEventListener("input", e => {
+  if (!e.target.matches("input.vol")) return;
+  setVolume(+e.target.value);
+  e.target.style.setProperty("--v", e.target.value + "%");
+});
+document.addEventListener("keydown", e => {
+  // Up/Down arrows nudge the volume while the player is showing (and you're not typing)
+  if (!S.playingId || /input|textarea/i.test(document.activeElement?.tagName || "")) return;
+  if (e.key === "ArrowUp" || e.key === "ArrowDown") { e.preventDefault(); setVolume(volPct() + (e.key === "ArrowUp" ? 10 : -10)); }
+});
 
 let db, auth;
 const configured = !Object.values(FIREBASE_CONFIG).some(v => String(v).startsWith("PASTE"));
@@ -730,8 +788,12 @@ function miniRow(s, ownerUid){
    Bump APP_VERSION and prepend an entry whenever you ship something.
    It pops up once per version (only what's new since that person last looked),
    and the ✨ button reopens the full list any time. */
-const APP_VERSION = "2026.10.09c";
+const APP_VERSION = "2026.10.11a";
 const WHATS_NEW = [
+  { v:"2026.10.11a", title:"Volume control for previews", items:[
+    "🔊 <b>Preview volume</b>: tap the speaker in the player bar for a volume slider and mute, or use the slider under <b>Play preview</b> on a song's page. Mixtape remembers your level on each device. On a computer, the ↑ / ↓ arrow keys nudge it while something's playing.",
+    "📱 On iPhone and iPad, Apple only lets the side buttons change volume, so you'll see a mute button there instead of a slider.",
+  ]},
   { v:"2026.10.09c", title:"Big update: player, crew stats, tags & playlist sync", items:[
     "▶️ <b>Mini player + Play all new</b>: previews keep playing in a bar above the menu. Tap <b>Play all new</b> at the top of the feed (or your Inbox) to run through every song you haven't heard, radio-style. Mark it listened right from the player.",
     "🏷️ <b>Mood tags</b>: tag songs #chill, #gym, #road trip and more (or make your own) when you share, or add them later from a song's page. Filter the feed by tag.",
@@ -778,7 +840,7 @@ function openHelp(){
     <p class="guide-intro">Mixtape is the crew's spot to swap songs, react to them, and build one shared playlist. Here's the quick tour:</p>
     ${step("➕", "<b>Share a song.</b> Tap the orange <b>+</b>, then search by song or artist, or paste a Spotify, Apple Music or YouTube link. Add a note on why they need to hear it, plus mood tags if you like.")}
     ${step("🎧", "<b>Listen on your app.</b> Every song has Spotify, Apple Music and YouTube Music buttons, so it doesn't matter what you use. Tap the artwork for a 30-second preview.")}
-    ${step("▶️", "<b>Play all new.</b> The button at the top of the feed plays previews of everything you haven't heard, one after another. The player bar above the menu has pause, next, and a ✓ to mark the song listened.")}
+    ${step("▶️", "<b>Play all new.</b> The button at the top of the feed plays previews of everything you haven't heard, one after another. The player bar above the menu has pause, next, a 🔊 volume control, and a ✓ to mark the song listened.")}
     ${step("🔥", "<b>React and rate.</b> Tap a reaction and give it 1–5 stars. Tap ✓ once you've listened so the crew knows (and it leaves your <b>New to me</b> list).")}
     ${step("📬", "<b>Send to a friend.</b> The paper-plane button sends a song straight to someone's <b>Inbox</b>. The Inbox tab shows a badge until they listen.")}
     ${step("💬", "<b>Talk about it.</b> Tap a song's name to open its page: comments, who rated it what, its mood tags, and more.")}
@@ -825,7 +887,7 @@ function togglePause(){
   render();
 }
 function nextTrack(){ if (S.qi < S.queue.length - 1) { S.qi++; playCurrent(); } else stopPlayer(); }
-function stopPlayer(){ audio.pause(); audio.removeAttribute("src"); S.playingId = null; S.paused = true; S.queue = []; render(); }
+function stopPlayer(){ audio.pause(); audio.removeAttribute("src"); S.playingId = null; S.paused = true; S.queue = []; VOL.open = false; render(); }
 audio.addEventListener("ended", () => { if (S.qi < S.queue.length - 1) nextTrack(); else { S.paused = true; render(); } });
 audio.addEventListener("timeupdate", () => {
   const pb = $("#player .pb"); if (pb && audio.duration) pb.style.setProperty("--p", (audio.currentTime / audio.duration * 100) + "%");
@@ -840,14 +902,18 @@ if ("mediaSession" in navigator) {
 function renderPlayer(){
   const el = $("#player"), s = S.songs.find(x => x.id === S.playingId);
   document.body.classList.toggle("has-player", !!s);
+  document.body.classList.toggle("vol-open", !!s && VOL.open && VOL.canSet);
   if (!s) { el.classList.add("hidden"); el.innerHTML = ""; return; }
   el.classList.remove("hidden");
   const mine = s.addedBy?.uid === S.me.uid;
-  el.innerHTML = `<div class="pb">
+  el.innerHTML = (VOL.open && VOL.canSet ? `<div class="volpop">
+      <button class="vbtn" data-action="mute" title="${VOL.muted || VOL.level === 0 ? "Unmute" : "Mute"}">${ico(volIcon())}</button>
+      ${volSlider()}<span class="pct">${volPct()}%</span></div>` : "") + `<div class="pb">
     <img src="${esc(s.artwork)}" alt="">
     <div class="meta" data-action="detail" data-id="${s.id}"><div class="title">${esc(s.title)}</div>
       <div class="artist">${esc(s.artist)}${S.queue.length > 1 ? ` · <span class="qpos">${S.qi+1}/${S.queue.length}</span>` : ""}</div></div>
     ${mine ? "" : `<button class="pbtn ${heard(s)?"on":""}" data-action="heard" data-id="${s.id}" title="${heard(s)?"Listened":"Mark listened"}">${ico("check")}</button>`}
+    <button class="pbtn" data-action="${VOL.canSet ? "volume" : "mute"}" title="${VOL.canSet ? "Volume" : ((VOL.muted) ? "Unmute" : "Mute")}" aria-expanded="${VOL.open}">${ico(volIcon())}</button>
     <button class="pbtn main" data-action="pp" title="${S.paused?"Play":"Pause"}">${ico(S.paused?"play":"pause")}</button>
     ${S.qi < S.queue.length - 1 ? `<button class="pbtn" data-action="next" title="Next">${ico("next")}</button>` : ""}
     <button class="pbtn" data-action="stop" title="Close">${ico("x")}</button>
@@ -884,6 +950,8 @@ document.addEventListener("click", async e => {
       return playQueue(up);
     }
     case "pp": return togglePause();
+    case "volume": VOL.open = !VOL.open; return renderPlayer();
+    case "mute": return toggleMute();
     case "next": return nextTrack();
     case "stop": return stopPlayer();
     case "detail": return openDetail(id);
@@ -1154,7 +1222,8 @@ function refreshDetail(){
     <div style="text-align:center;margin-bottom:12px"><div class="artist" style="font-size:16px">${esc(s.artist)}</div>
       <div class="hint">${[s.album, s.year, s.genre].filter(Boolean).map(esc).join(" · ")}</div></div>
     ${s.previewUrl ? `<div class="btnrow" style="justify-content:center;margin-bottom:12px">
-      <button class="btn primary" data-action="preview" data-id="${s.id}">${ico(playingThis ? "pause" : "play","i")} ${playingThis ? "Pause" : "Play preview"}</button></div>` : ""}
+      <button class="btn primary" data-action="preview" data-id="${s.id}">${ico(playingThis ? "pause" : "play","i")} ${playingThis ? "Pause" : "Play preview"}</button></div>
+    <div class="volrow"><button class="vbtn" data-action="mute" title="${VOL.muted || VOL.level === 0 ? "Unmute" : "Mute"}">${ico(volIcon())}</button>${VOL.canSet ? volSlider() : `<span class="hint">Use your phone's volume buttons</span>`}</div>` : ""}
     <div class="links">
       <a class="lnk" href="${esc(L.spotify)}" target="_blank" rel="noopener">${ico("sp")}Spotify</a>
       <a class="lnk" href="${esc(L.apple)}" target="_blank" rel="noopener">${ico("am")}Apple Music</a>
